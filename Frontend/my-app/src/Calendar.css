@@ -1,0 +1,54 @@
+/* src/Calendar.css */
+
+.calendar {
+    width: 300px;
+    margin: 0 auto;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 20px;
+  }
+  
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  
+  .days-of-week {
+    display: flex;
+  }
+  
+  .day-of-week {
+    width: 14.2%;
+    text-align: center;
+    font-weight: bold;
+    padding: 5px 0;
+    border-bottom: 1px solid #ccc;
+  }
+  
+  .days {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  
+  .calendar-day {
+    width: 14.2%;
+    height: 40px;
+    text-align: center;
+    line-height: 40px;
+    margin-bottom: 5px;
+    border-radius: 5px;
+    background-color: #f0f0f0;
+    cursor: pointer;
+  }
+  
+  .calendar-day:hover {
+    background-color: #ddd;
+  }
+  
+  .empty-day {
+    width: 14.2%;
+    height: 40px;
+  }
+  
