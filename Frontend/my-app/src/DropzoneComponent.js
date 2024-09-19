@@ -7,7 +7,6 @@ import { useNavigate } from 'react-router-dom';
 
 const DropzoneComponent = ({ onDrop }) => {
   const [selectedFile, setSelectedFile] = useState(null);
-  const [shouldNavigate, setShouldNavigate] = useState(false);
   const navigate = useNavigate();
 
 
@@ -20,14 +19,12 @@ const DropzoneComponent = ({ onDrop }) => {
   }, [onDrop]);
 
   const handleUpload = () => {
-    setShouldNavigate(true);
-  };
+    if (selectedFile) {
+      console.log('Uploading file:', selectedFile);
 
-  useEffect(() => {
-    if (shouldNavigate) {
       navigate('/report');
     }
-  }, [shouldNavigate, navigate]);
+  };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop: handleDrop,
     maxFiles: 1 });
