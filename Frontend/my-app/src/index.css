@@ -89,7 +89,16 @@ footer {
 }
 
 .dropzone-active {
-  border-color: green;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 350px;
+  height: 350px;
+  border: 2px dashed #999;
+  background-color: green;
+  color: #666;
+  margin-left: 130px;
+  margin-top: 50px;
 }
 
 

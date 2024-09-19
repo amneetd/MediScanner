@@ -32,9 +32,7 @@ const DropzoneComponent = ({ onDrop }) => {
     disabled: !!selectedFile 
   });
 
-  const dropzoneClassName = `dropzone-${isDragActive ? 'active' : ''}`;
-  console.log('Current dropzone className:', dropzoneClassName);
-
+  const dropzoneClassName = `dropzone-${selectedFile ? 'active' : ''}`;
 
   return (
     <div 
