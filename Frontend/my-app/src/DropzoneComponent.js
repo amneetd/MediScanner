@@ -26,13 +26,20 @@ const DropzoneComponent = ({ onDrop }) => {
     }
   };
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop: handleDrop,
-    maxFiles: 1 });
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({ 
+    onDrop: handleDrop,
+    maxFiles: 1,
+    disabled: !!selectedFile 
+  });
+
+  const dropzoneClassName = `dropzone-${isDragActive ? 'active' : ''}`;
+  console.log('Current dropzone className:', dropzoneClassName);
+
 
   return (
     <div 
       {...getRootProps()} 
-      className={`dropzone ${isDragActive ? 'active' : ''}`}
+      className={dropzoneClassName}
     >
       <input {...getInputProps()} />
       {!selectedFile && (
