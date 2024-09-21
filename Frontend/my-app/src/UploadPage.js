@@ -1,4 +1,3 @@
-// src/UploadPage.js
 import React, { useCallback } from 'react';
 import './index.css';
 import DropzoneComponent from './DropzoneComponent';
@@ -10,7 +9,7 @@ const UploadPage = () => {
       }, []);
 
   return (
-    <div className="upload-container">
+    <div className="mid-container">
       <header>
         <h1>MediScanner</h1>
       </header>

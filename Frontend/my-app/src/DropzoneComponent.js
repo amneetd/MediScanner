@@ -1,4 +1,3 @@
-// src/DropzoneComponent.js
 import React, { useCallback, useState, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 import './index.css';
