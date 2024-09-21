@@ -11,7 +11,7 @@ body, html {
   -moz-osx-font-smoothing: grayscale;
 }
 
-.upload-container {
+.mid-container {
   display: flex;
   flex-direction: column;
   min-height: 100vh; 
@@ -127,4 +127,67 @@ footer {
 
 .upload-button:hover {
   background-color: darkgreen;
+}
+
+.login-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 20px 0;
+}
+
+.login-box input {
+  margin-top: 35px;
+  width: 300px;
+  font-size: 1.0rem; 
+  padding: 15px; 
+  border-radius: 15px;
+  border: 1px solid #ccc;
+}
+
+.login-box input#username {
+  width: 300px;
+  margin-top: 120px;
+  font-size: 1.0rem; 
+  padding: 15px; 
+}
+
+.login-box input::placeholder {
+  font-style: italic; 
+}
+
+.login-box button {
+  margin-top: 35px;
+  padding: 15px 20px;
+  width: 334px;
+  border-radius: 15px;
+  border: 1px solid green;
+  font-size: 1.0rem; 
+  color: white;
+  background-color: green;
+}
+
+.login-box button:hover {
+  background-color: darkgreen;
+  border: 1px solid #ccc;
+  cursor: pointer;
+}
+
+.login-back {
+  width: 400px;
+  height: 500px;
+  background-color: #666;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 15px;
+
+}
+
+.eye-icon {
+  right: 10px;
+  transform: translateY(-35px) translateX(130px);
+  cursor: pointer;
+  color: #666;
+  font-size: 1.2rem;
 }
