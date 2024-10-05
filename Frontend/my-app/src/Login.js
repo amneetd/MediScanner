@@ -4,6 +4,8 @@ import { useDropzone } from 'react-dropzone';
 import './index.css';
 import { useNavigate } from 'react-router-dom'; 
 import '@fortawesome/fontawesome-free/css/all.min.css';
+import { Link } from 'react-router-dom'
+
 
 
 const LoginPage = () => {
@@ -13,6 +15,10 @@ const LoginPage = () => {
     navigate('/upload')
   }
   const [showPassword, setShowPassword] = useState(false);
+
+  const register = () => {
+    navigate('/register')
+  }
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -35,7 +41,12 @@ const LoginPage = () => {
               className={`fas ${showPassword ? 'fa-eye-slash' : 'fa-eye'} eye-icon`} 
               onClick={togglePasswordVisibility}
             />
-            <button type="submit" onClick={nav}>Login</button>
+            <div className="create-account-link">
+            <Link to="/register" className="create-account-link"> 
+              Create an Account
+            </Link>
+          </div>        
+            <button className="loginButton" type="submit" onClick={nav}>Login</button>
         </div>
         </div>
       <footer>
