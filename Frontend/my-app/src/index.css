@@ -156,7 +156,59 @@ footer {
   font-style: italic; 
 }
 
-.login-box button {
+.login-back {
+  width: 400px;
+  height: 500px;
+  background-color: #666;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 15px;
+}
+
+.login-back2 {
+  width: 400px;
+  height: 520px;
+  background-color: #666;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 15px;
+}
+
+.eye-icon {
+  right: 10px;
+  transform: translateY(-35px) translateX(130px);
+  cursor: pointer;
+  color: #666;
+  font-size: 1.2rem;
+}
+
+.create-account-link {
+  color: white;                
+  text-decoration: underline;   
+  cursor: pointer;              
+  font-weight: bold;            
+}
+
+.create-account-link:hover {
+  color: rgb(6, 200, 6);              
+  text-decoration: none;        
+}
+
+.registerButton {
+  padding: 15px 20px;
+  width: 334px;
+  border-radius: 15px;
+  border: 1px solid green;
+  font-size: 1.0rem; 
+  color: white;
+  background-color: green;
+  transform: translateY(-18px);  
+
+}
+
+.loginButton {
   margin-top: 35px;
   padding: 15px 20px;
   width: 334px;
@@ -173,20 +225,13 @@ footer {
   cursor: pointer;
 }
 
-.login-back {
-  width: 400px;
-  height: 500px;
-  background-color: #666;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  border-radius: 15px;
-
+.confirmPassword-Box {
+  transform: translateY(-18px);  
 }
 
-.eye-icon {
+.eye-icon2 {
   right: 10px;
-  transform: translateY(-35px) translateX(130px);
+  transform: translateY(-52px) translateX(130px);
   cursor: pointer;
   color: #666;
   font-size: 1.2rem;

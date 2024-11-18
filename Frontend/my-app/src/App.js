@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import UploadPage from './UploadPage';
 import Login from './Login';
 import MedicalInfo from "./MedicalInfo";
+import Register from "./Register";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
           <Route path="/upload" element={<UploadPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/report" element={<MedicalInfo />} />
+          <Route path="/register" element={<Register/>} />
         </Routes>
       </div>
     </Router>
