@@ -1,12 +1,23 @@
 import React, { useCallback } from 'react';
 import './index.css';
 import DropzoneComponent from './DropzoneComponent';
+import { onAuthStateChanged } from "firebase/auth";
+import { db, auth } from "./Firebase-Configurations/firebaseConfig.js"
 
 const UploadPage = () => {
     const handleDrop = useCallback((acceptedFiles) => {
         // Handle the uploaded files
         console.log(acceptedFiles);
       }, []);
+
+      onAuthStateChanged(auth, activeUser => {
+        if(activeUser){
+          console.log("login is a success");
+        }
+        else{
+          console.log("user has logged out");
+        }
+      })
 
   return (
     <div className="mid-container">
