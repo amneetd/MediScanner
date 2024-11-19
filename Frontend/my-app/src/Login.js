@@ -2,7 +2,7 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 import './index.css';
-import { useNavigate } from 'react-router-dom'; 
+import { useNavigate, Link } from 'react-router-dom'; 
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import { collection, getDocs } from "firebase/firestore";
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
@@ -35,6 +35,10 @@ const LoginPage = () => {
     navigate('/upload')
   }
 
+  const register = () => {
+    navigate('/register')
+  }
+
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
@@ -57,7 +61,12 @@ const LoginPage = () => {
               className={`fas ${showPassword ? 'fa-eye-slash' : 'fa-eye'} eye-icon`} 
               onClick={togglePasswordVisibility}
             />
-            <button type="submit" onClick={nav}>Login</button>
+            <div className="create-account-link">
+            <Link to="/register" className="create-account-link"> 
+              Create an Account
+            </Link>
+          </div>        
+            <button className="loginButton" type="submit" onClick={nav}>Login</button>
         </div>
         </div>
       <footer>
