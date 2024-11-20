@@ -21,7 +21,7 @@ const DropzoneComponent = ({ onDrop }) => {
     if (selectedFile) {
       console.log('Uploading file:', selectedFile);
 
-      navigate('/report');
+      navigate('/medicalinfo');
     }
   };
 

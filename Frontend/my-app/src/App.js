@@ -15,7 +15,7 @@ function App() {
           <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/upload" element={<UploadPage />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/report" element={<MedicalInfo />} />
+          <Route path="/medicalinfo" element={<MedicalInfo />} />
           <Route path="/register" element={<Register/>} />
         </Routes>
       </div>
