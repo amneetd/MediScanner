@@ -6,6 +6,8 @@ const MedicalInfo = () => {
   const [medicationData, setMedicationData] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [savedMedications, setSavedMedications] = useState([]);
+
 
   useEffect(() => {
     //our api endpoint -- I'm assuming this is how we're going to do it
@@ -36,6 +38,15 @@ const MedicalInfo = () => {
     setMedicationData(sampleData);
     setLoading(false);
   }, );
+
+  const handleSave = () => {
+    if (medicationData) {
+      setSavedMedications((prev) => [...prev, medicationData]);
+      console.log("Medication saved:", medicationData);
+      alert(`${medicationData.name} has been saved. You can now view it under the 'Saved Medications' tab`);
+    }
+  };
+
   if (loading) {
     return <p>Loading your medical information. Please wait</p>;
   }
@@ -76,7 +87,22 @@ const MedicalInfo = () => {
           ))}
         </ul>
       </div>
-
+      <button 
+        onClick={handleSave} 
+        style={{
+          backgroundColor: '#4CAF50',
+          color: 'white',
+          padding: '10px 20px',
+          border: 'none',
+          borderRadius: '5px',
+          cursor: 'pointer',
+        }}
+      >
+        Save this Medication
+      </button>
+      {savedMedications && (
+        <p style={{ color: 'green', marginTop: '10px' }}>{savedMedications}</p>
+      )}
     </div>
   );
 };
