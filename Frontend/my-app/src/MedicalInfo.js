@@ -90,7 +90,7 @@ const MedicalInfo = () => {
       <button 
         onClick={handleSave} 
         style={{
-          backgroundColor: '#4CAF50',
+          backgroundColor: '#6b83ff',
           color: 'white',
           padding: '10px 20px',
           border: 'none',

@@ -44,7 +44,7 @@ const SavedMedications = () => {
           <div
             key={medication.id}
             style={{
-              border: '1px solid #ddd',
+              border: '1px solid #6b83ff',
               borderRadius: '5px',
               padding: '15px',
               marginBottom: '10px',

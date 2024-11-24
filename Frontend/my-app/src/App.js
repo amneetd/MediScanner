@@ -4,6 +4,7 @@ import Calendar from "./Calendar";
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import UploadPage from './UploadPage';
 import Navbar from "./Navbar";
+import NewNavbar from "./newNav";
 import Login from './Login';
 import MedicalInfo from "./MedicalInfo";
 import SavedMedications from "./SavedMedications";
@@ -13,7 +14,7 @@ import UserProfile from "./Profile";
 const App = () =>{
   return (
     <Router>
-      <Navbar />
+      <NewNavbar />
       <div>
         <Routes>
           <Route path="/" element={<Navigate to="/login" replace />} />
@@ -23,6 +24,7 @@ const App = () =>{
           <Route path="/register" element={<Register/>} />
           <Route path="/saved" element={<SavedMedications/>} />
           <Route path="/me" element={<UserProfile/>} />
+          <Route path="/calendar" element={<Calendar/>} />
 
         </Routes>
       </div>
