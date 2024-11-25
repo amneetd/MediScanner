@@ -1,3 +1,7 @@
+/**
+ * this page is not functional --> add functionality to edit profile, log out, etc.
+ */
+
 import React from 'react';
 
 const UserProfile = () => {

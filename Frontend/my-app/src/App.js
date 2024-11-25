@@ -10,6 +10,8 @@ import MedicalInfo from "./MedicalInfo";
 import SavedMedications from "./SavedMedications";
 import Register from "./Register";
 import UserProfile from "./Profile";
+import Search from "./Search";
+import Reminders from "./Reminders";
 
 const App = () =>{
   return (
@@ -25,6 +27,8 @@ const App = () =>{
           <Route path="/saved" element={<SavedMedications/>} />
           <Route path="/me" element={<UserProfile/>} />
           <Route path="/calendar" element={<Calendar/>} />
+          <Route path="/search" element={<Search/>} />
+          <Route path="/reminders" element={<Reminders/>} />
 
         </Routes>
       </div>

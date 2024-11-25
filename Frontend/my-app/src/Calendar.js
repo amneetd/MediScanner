@@ -1,3 +1,9 @@
+/**
+ * to edit:
+ * - a user should be able to edit reminders here
+ * - a user should be able to remove an item from the calendar (either a one-time thing or for every instance)
+ */
+
 import React, { useState } from "react";
 import "./Calendar.css";
 

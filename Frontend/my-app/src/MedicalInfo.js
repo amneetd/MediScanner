@@ -7,6 +7,7 @@ const MedicalInfo = () => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [savedMedications, setSavedMedications] = useState([]);
+  const [reminders, setReminders] = useState([]);
 
 
   useEffect(() => {
@@ -30,7 +31,7 @@ const MedicalInfo = () => {
 
     const sampleData = {
       name: "Ibuprofen",
-      dosage: "200mg",
+      dosage: "200mg daily",
       interactions: ["Aspirin", "Blood Thinners", "Alcohol"],
       sideEffects: ["Nausea", "Dizziness", "Stomach pain", "Rash"],
     };
@@ -44,6 +45,32 @@ const MedicalInfo = () => {
       setSavedMedications((prev) => [...prev, medicationData]);
       console.log("Medication saved:", medicationData);
       alert(`${medicationData.name} has been saved. You can now view it under the 'Saved Medications' tab`);
+    }
+  };
+
+  const handleSetReminder = () => {
+    if (!medicationData.dosage.toLowerCase().includes("daily")) {
+      alert("Unable to set a reminder for this dosage.");
+      return;
+    }
+
+    // get the dosage --> using daily for now
+    const reminder = {
+      id: Date.now(),
+      name: medicationData.name,
+      dosage: medicationData.dosage,
+    };
+
+    setReminders((prev) => [...prev, reminder]);
+    alert(`Reminder set for ${medicationData.name} (${medicationData.dosage}).`);
+  };
+
+  const speakText = (text) => {
+    if ('speechSynthesis' in window) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      speechSynthesis.speak(utterance);
+    } else {
+      alert('Text-to-speech is not supported in this browser.');
     }
   };
 
@@ -62,31 +89,119 @@ const MedicalInfo = () => {
 
       <div style={{ marginBottom: '20px' }}>
         <h2>Medication Name</h2>
+        <div style={{flexDirection: 'row', display: 'flex'}}>
         <p>{medicationData.name}</p>
+        <button
+          onClick={() => speakText(`Medication Name: ${medicationData.name}`)}
+          style={{
+            backgroundColor: '#6b83ff',
+            color: 'white',
+            padding: '5px 10px',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: 'pointer',
+            marginLeft: '20px'
+          }}
+        >
+          Speak Name
+        </button>
+        </div>
       </div>
 
       <div style={{ marginBottom: '20px' }}>
         <h2>Dosage</h2>
+        <div style={{flexDirection: 'row', display: 'flex'}}>
+
         <p>{medicationData.dosage}</p>
+        <button
+          onClick={() => speakText(`Dosage: ${medicationData.dosage}`)}
+          style={{
+            backgroundColor: '#6b83ff',
+            color: 'white',
+            padding: '5px 10px',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: 'pointer',
+            marginLeft: '20px'
+          }}
+        >
+          Speak Dosage
+        </button>
+        </div>
       </div>
 
       <div style={{ marginBottom: '20px' }}>
         <h2>Interactions</h2>
+        <div style={{flexDirection: 'row', display: 'flex'}}>
         <ul>
           {medicationData.interactions.map((interaction, index) => (
             <li key={index}>{interaction}</li>
           ))}
         </ul>
+        <button
+          onClick={() =>
+            speakText(
+              `Interactions: ${medicationData.interactions.join(', ')}`
+            )
+          }
+          style={{
+            backgroundColor: '#6b83ff',
+            color: 'white',
+            padding: '5px 10px',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: 'pointer',
+            marginLeft: '20px'
+            //fix the button size (make it absolute, not dynamic)
+          }}
+        >
+          Speak Interactions
+        </button>
+        </div>
       </div>
       
       <div style={{ marginBottom: '20px' }}>
         <h2>Side Effects</h2>
+        <div style={{flexDirection: 'row', display: 'flex'}}>
         <ul>
           {medicationData.sideEffects.map((effect, index) => (
             <li key={index}>{effect}</li>
           ))}
         </ul>
+        <button
+          onClick={() =>
+            speakText(`Side Effects: ${medicationData.sideEffects.join(', ')}`)
+          }
+          style={{
+            backgroundColor: '#6b83ff',
+            color: 'white',
+            padding: '5px 10px',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: 'pointer',
+            marginLeft: '20px'
+            //fix the button size (make it absolute, not dynamic)
+
+          }}
+        >
+          Speak Side Effects
+        </button>
+        </div>
       </div>
+      <button
+        onClick={handleSetReminder}
+        style={{
+          backgroundColor: '#6b83ff',
+          color: 'white',
+          padding: '10px 20px',
+          border: 'none',
+          borderRadius: '5px',
+          cursor: 'pointer',
+          marginRight: '10px',
+        }}
+      >
+        Set Reminder
+      </button>
       <button 
         onClick={handleSave} 
         style={{

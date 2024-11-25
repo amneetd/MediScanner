@@ -1,3 +1,9 @@
+/**
+ * to fix
+ * - button + functionality to add saved meds to calendar
+ * - button + functionality to add reminders
+ */
+
 import React, { useState, useEffect } from 'react';
 
 const SavedMedications = () => {
@@ -26,6 +32,27 @@ const SavedMedications = () => {
     setLoading(false);
 
   }, []);
+  const handleDelete = (id) => {
+    // Confirmation dialog
+    const confirmed = window.confirm("Are you sure you want to delete this medication from your profile?");
+    if (!confirmed) return;
+
+    // update state to remove med using id (change if it's stored differently)
+    setSavedMedications((prev) => prev.filter((medication) => medication.id !== id));
+
+    // api call to delete
+    /*
+    axios
+      .delete(``)
+      .then(() => {
+        setSavedMedications((prev) => prev.filter((medication) => medication.id !== id));
+      })
+      .catch((error) => {
+        console.error("there was an error deleting this medication:", error);
+        alert("Unable to delete medication at this time.");
+      });
+    */
+  };
 
   if (loading) {
     return <p>Loading your saved medications...</p>;
@@ -64,6 +91,20 @@ const SavedMedications = () => {
                 <li key={index}>{effect}</li>
               ))}
             </ul>
+            <button
+              onClick={() => handleDelete(medication.id)}
+              style={{
+                backgroundColor: '#ff4d4d',
+                color: 'white',
+                padding: '8px 15px',
+                border: 'none',
+                borderRadius: '5px',
+                cursor: 'pointer',
+                marginTop: '10px',
+              }}
+            >
+              Delete
+            </button>
           </div>
         ))}
       </div>

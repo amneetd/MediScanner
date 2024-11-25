@@ -25,7 +25,10 @@ const NewNavbar = () => {
             <Link to="/upload" style={styles.navLink} onClick={toggleMenu}>Medication Scan</Link>
           </li>
           <li style={styles.navItem}>
-            <Link to="/saved" style={styles.navLink} onClick={toggleMenu}>Saved Medications</Link>
+            <Link to="/search" style={styles.navLink} onClick={toggleMenu}>Medication Search</Link>
+          </li>
+          <li style={styles.navItem}>
+            <Link to="/saved" style={styles.navLink} onClick={toggleMenu}>My Saved Medications</Link>
           </li>
           <li style={styles.navItem}>
             <Link to="/calendar" style={styles.navLink} onClick={toggleMenu}>Calendar</Link>
