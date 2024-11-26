@@ -15,16 +15,16 @@ const SavedMedications = () => {
       {
         id: 1,
         name: "Ibuprofen",
-        dosage: "330mg",
-        interactions: ["x", "xx"],
-        sideEffects: ["a", "a"],
+        dosage: "200mg daily",
+      interactions: ["Aspirin", "Blood Thinners", "Alcohol"],
+      sideEffects: ["Nausea", "Dizziness", "Stomach pain", "Rash"],
       },
       {
         id: 2,
         name: "z",
-        dosage: "10mg",
-        interactions: ["water"],
-        sideEffects: ["sleep"],
+        dosage: "10mg once a week",
+        interactions: ["water", "sun"],
+        sideEffects: ["fatigue", "caffeine"],
       },
     ];
 
@@ -82,13 +82,13 @@ const SavedMedications = () => {
             <p><strong>Interactions:</strong></p>
             <ul>
               {medication.interactions.map((interaction, index) => (
-                <li key={index}>{interaction}</li>
+                <li key={index}>{interaction|| "Unknown"}</li>
               ))}
             </ul>
             <p><strong>Side Effects:</strong></p>
             <ul>
               {medication.sideEffects.map((effect, index) => (
-                <li key={index}>{effect}</li>
+                <li key={index}>{effect|| "Unknown"}</li>
               ))}
             </ul>
             <button

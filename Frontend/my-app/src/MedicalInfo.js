@@ -215,9 +215,19 @@ const MedicalInfo = () => {
       >
         Save this Medication
       </button>
-      {savedMedications && (
-        <p style={{ color: 'green', marginTop: '10px' }}>{savedMedications}</p>
-      )}
+      <br/>
+      {savedMedications.length > 0 && ( //right now this just populates below the information --> in the future it would work with the actual saved medications page
+  <div style={{ color: '#f7a1e9', marginTop: '10px' }}>
+    <h3>Saved Medications:</h3>
+    <ul>
+      {savedMedications.map((medication, index) => (
+        <li key={index}>
+          <strong>{medication.name}</strong> - {medication.dosage}
+        </li>
+      ))}
+    </ul>
+  </div>
+)}
     </div>
   );
 };

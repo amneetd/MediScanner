@@ -32,7 +32,6 @@ const LoginPage = () => {
       window.alert("trouble logging in");
       console.log(error);
     })
-    navigate('/upload')
   }
 
   const register = () => {
