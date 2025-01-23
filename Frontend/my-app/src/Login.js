@@ -2,10 +2,8 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 import './index.css';
-import { useNavigate } from 'react-router-dom'; 
+import { useNavigate, Link } from 'react-router-dom'; 
 import '@fortawesome/fontawesome-free/css/all.min.css';
-import { Link } from 'react-router-dom'
-
 import { collection, getDocs } from "firebase/firestore";
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
 import { db, auth } from "./Firebase-Configurations/firebaseConfig.js"
@@ -34,7 +32,6 @@ const LoginPage = () => {
       window.alert("trouble logging in");
       console.log(error);
     })
-    navigate('/upload')
   }
   const [showPassword, setShowPassword] = useState(false);
 

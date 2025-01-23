@@ -1,9 +1,15 @@
-// src/Calendar.js
-import React, { useState, useEffect } from "react";
+/**
+ * to edit:
+ * - a user should be able to edit reminders here
+ * - a user should be able to remove an item from the calendar (either a one-time thing or for every instance)
+ */
+
+import React, { useState } from "react";
 import "./Calendar.css";
 
 const Calendar = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [selectedDay, setSelectedDay] = useState(null); // To store the selected day
 
   const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -22,6 +28,7 @@ const Calendar = () => {
       1
     );
     setCurrentDate(newDate);
+    setSelectedDay(null); // Clear the selected day when changing the month
   };
 
   const renderDays = () => {
@@ -38,7 +45,11 @@ const Calendar = () => {
 
     for (let day = 1; day <= daysInMonth; day++) {
       daysArray.push(
-        <div key={day} className="calendar-day">
+        <div
+          key={day}
+          className={`calendar-day ${selectedDay === day ? "selected" : ""}`}
+          onClick={() => setSelectedDay(day)}
+        >
           {day}
         </div>
       );
@@ -48,23 +59,34 @@ const Calendar = () => {
   };
 
   return (
-    <div className="calendar">
-      <div className="header">
-        <button onClick={() => changeMonth(-1)}>{"<"}</button>
-        <div>
-          {currentDate.toLocaleString("default", { month: "long" })}{" "}
-          {currentDate.getFullYear()}
-        </div>
-        <button onClick={() => changeMonth(1)}>{">"}</button>
-      </div>
-      <div className="days-of-week">
-        {daysOfWeek.map((day) => (
-          <div key={day} className="day-of-week">
-            {day}
+    <div className="calendar-container">
+      <div className="calendar">
+        <div className="header">
+          <button onClick={() => changeMonth(-1)}>{"<"}</button>
+          <div>
+            {currentDate.toLocaleString("default", { month: "long" })}{" "}
+            {currentDate.getFullYear()}
           </div>
-        ))}
+          <button onClick={() => changeMonth(1)}>{">"}</button>
+        </div>
+        <div className="days-of-week">
+          {daysOfWeek.map((day) => (
+            <div key={day} className="day-of-week">
+              {day}
+            </div>
+          ))}
+        </div>
+        <div className="days">{renderDays()}</div>
       </div>
-      <div className="days">{renderDays()}</div>
+      <br/>
+      {selectedDay && (
+        <div className="info-box">
+          <h2>{`${currentDate.toLocaleString("default", { month: "long" })} ${
+              selectedDay
+            }, ${currentDate.getFullYear()}`} Medication Information</h2>
+          <p>Details here: </p>
+        </div>
+      )}
     </div>
   );
 };

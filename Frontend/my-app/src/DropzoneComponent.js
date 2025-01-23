@@ -21,7 +21,7 @@ const DropzoneComponent = ({ onDrop }) => {
     if (selectedFile) {
       console.log('Uploading file:', selectedFile);
 
-      navigate('/report');
+      navigate('/medicalinfo');
     }
   };
 
@@ -37,23 +37,28 @@ const DropzoneComponent = ({ onDrop }) => {
     <div 
       {...getRootProps()} 
       className={dropzoneClassName}
+      style={{
+        flexDirection: 'column'
+      }}
     >
       <input {...getInputProps()} />
       {!selectedFile && (
         isDragActive ? 
         <p>Drop the file here...</p> :
-        <p>Drag 'n' drop your image here, or click to select files</p>
+        <p>Drag and drop your image here, or click to select files</p>
       )}
 
       {selectedFile && (
         <div className="file-info">
-          <p>Selected File: {selectedFile.name}</p>
+          <p>Selected File: 
+            <br/>
+            {selectedFile.name}</p>
         </div>
       )}
 
       {selectedFile && (
         <button className="upload-button" onClick={handleUpload}>
-          Upload
+          Upload this file
         </button>
       )}
       
