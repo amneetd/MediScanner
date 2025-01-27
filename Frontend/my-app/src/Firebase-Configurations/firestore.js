@@ -12,7 +12,15 @@ import {
     arrayUnion, 
     arrayRemove
   } from "firebase/firestore";
-import { getAuth, createUserWithEmailAndPassword, updateProfile, updatePhoneNumber } from "firebase/auth";
+import { 
+    getAuth, 
+    createUserWithEmailAndPassword, 
+    updateProfile, 
+    updatePhoneNumber, 
+    updatePassword, 
+    reauthenticateWithCredential, 
+    EmailAuthProvider 
+    } from "firebase/auth";
 import { db } from "./firebaseConfig";
   
 const usersCollectionRef = collection(db, "users");
@@ -87,5 +95,23 @@ export const deleteMedication = async (userUID) => {
             medicationName: "",
             startDate: ""
         })
+    });
+}
+
+
+export const changeUsersPassword = async (newPassword) => {
+    const auth = getAuth();
+
+    const user = auth.currentUser;
+    console.log(user)
+    const userCredential = EmailAuthProvider.credential(user.email, "password")
+    reauthenticateWithCredential(user, userCredential).then(() => {
+        updatePassword(user, newPassword).then(() => {
+            console.log("updated password")
+        }).catch((error) => {
+            console.log(error)
+        });
+    }).catch((error) => {
+        console.log(error)
     });
 }
