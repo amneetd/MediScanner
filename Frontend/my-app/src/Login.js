@@ -33,10 +33,7 @@ const LoginPage = () => {
       console.log(error);
     })
   }
-
-  const register = () => {
-    navigate('/register')
-  }
+  const [showPassword, setShowPassword] = useState(false);
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
