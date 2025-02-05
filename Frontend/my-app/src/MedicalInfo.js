@@ -1,6 +1,8 @@
 // src/MedicalInfo.js
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { saveMedication } from "./Firebase-Configurations/firestore.js"
+import { auth } from './Firebase-Configurations/firebaseConfig';
 
 const MedicalInfo = () => {
   const [medicationData, setMedicationData] = useState(null);
@@ -8,6 +10,7 @@ const MedicalInfo = () => {
   const [loading, setLoading] = useState(true);
   const [savedMedications, setSavedMedications] = useState([]);
   const [reminders, setReminders] = useState([]);
+  const [userID, setUserID] = useState(null);  
 
 
   useEffect(() => {
@@ -28,21 +31,29 @@ const MedicalInfo = () => {
       });
   }, []);
 */
+    const unsubscribe = auth.onAuthStateChanged((currentUser) => {
+      if (currentUser) {
+        setUserID(currentUser.uid)
+      } 
+    });
 
     const sampleData = {
       name: "Ibuprofen",
-      dosage: "200mg daily",
+      dosage: "400mg",
+      frequency: "weekly",
       interactions: ["Aspirin", "Blood Thinners", "Alcohol"],
       sideEffects: ["Nausea", "Dizziness", "Stomach pain", "Rash"],
+      dIN: 111114
     };
 
     setMedicationData(sampleData);
     setLoading(false);
-  }, );
+  }, []);
 
   const handleSave = () => {
     if (medicationData) {
       setSavedMedications((prev) => [...prev, medicationData]);
+      saveMedication(userID, medicationData.dosage, "finishDate", medicationData.frequency, "beginOn", medicationData.dIN)
       console.log("Medication saved:", medicationData);
       alert(`${medicationData.name} has been saved. You can now view it under the 'Saved Medications' tab`);
     }
@@ -112,9 +123,9 @@ const MedicalInfo = () => {
         <h2>Dosage</h2>
         <div style={{flexDirection: 'row', display: 'flex'}}>
 
-        <p>{medicationData.dosage}</p>
+        <p>{medicationData.dosage + " " + medicationData.frequency}</p>
         <button
-          onClick={() => speakText(`Dosage: ${medicationData.dosage}`)}
+          onClick={() => speakText(`Dosage: ${medicationData.dosage + " " + medicationData.frequency}`)}
           style={{
             backgroundColor: '#6b83ff',
             color: 'white',
