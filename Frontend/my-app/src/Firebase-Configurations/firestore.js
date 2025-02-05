@@ -31,6 +31,7 @@ export const retrieveUserInformation = async (userUID) => {
         const docSnap = await getDoc(docRef);
         if(docSnap.exists()){
             console.log("Document Data", docSnap.data())
+            return docSnap.data()
         }
         else{
             console.log("No document exists for this user")
@@ -67,33 +68,32 @@ export const registerUser = async (username, email, phoneNumber, password) => {
 }
 
 
-export const saveMedication = async (userUID) => {
+export const saveMedication = async (userUID, dose, finishDate, howOften, beginOn, DrugIDNum) => {
     const docRef = doc(db, "users", userUID);
     await updateDoc(docRef, {
         savedMedications: arrayUnion({
-            currentlyTaking: false,
-            dosage: 300,
-            endDate: "",
-            frequency: "",
-            medicationName: "",
-            startDate: ""
+            dosage: dose,
+            endDate: finishDate,
+            frequency: howOften,
+            startDate: beginOn,
+            dIN: DrugIDNum
         })
     });
 }
 
 
-export const deleteMedication = async (userUID) => {
+export const deleteMedication = async (userUID, dose, finishDate, howOften, beginOn, DrugIDNum) => {
     const docRef = doc(db, "users", userUID);
     const docSnap = await getDoc(docRef);
     console.log(docSnap.data())
+    console.log(userUID, dose, finishDate, howOften, beginOn, DrugIDNum)
     await updateDoc(docRef, {
         savedMedications: arrayRemove({
-            currentlyTaking: false,
-            dosage: 300,
-            endDate: "",
-            frequency: "",
-            medicationName: "",
-            startDate: ""
+            dosage: dose,
+            endDate: finishDate,
+            frequency: howOften,
+            startDate: beginOn,
+            dIN: DrugIDNum
         })
     });
 }
