@@ -115,3 +115,27 @@ export const changeUsersPassword = async (newPassword) => {
         console.log(error)
     });
 }
+
+
+export const updatePrescriptionInstructions = async (userUID, medicationDIN, newDosage, newEndDate, newFrequency, newStartDate) => {
+    const docRef = doc(db, "users", userUID);
+    const docSnap = await getDoc(docRef);
+    if(docSnap.exists()){
+        const usersMedications = docSnap.data().savedMedications
+        const location = usersMedications.findIndex(medication => medication.dIN === medicationDIN)
+        console.log(usersMedications)
+        console.log(location)
+        if(location > -1){
+            usersMedications[location].dosage = newDosage;
+            usersMedications[location].endDate = newEndDate;
+            usersMedications[location].frequency = newFrequency;
+            usersMedications[location].startDate = newStartDate;
+            try{
+                await updateDoc(docRef, { savedMedications: usersMedications });
+            }
+            catch(error){
+                console.log(error)
+            }
+        }
+    }
+}
