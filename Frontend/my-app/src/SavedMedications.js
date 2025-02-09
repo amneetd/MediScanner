@@ -5,12 +5,40 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { deleteMedication, retrieveUserInformation } from "./Firebase-Configurations/firestore.js"
+import { auth } from './Firebase-Configurations/firebaseConfig';
 
 const SavedMedications = () => {
   const [savedMedications, setSavedMedications] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [userID, setUserID] = useState(null);  
+
+  const addMedicationDetails = (medication, index) => {
+    medication["id"] = index;
+    medication["name"] = "Ibuprofen";
+    medication["interactions"] = ["Aspirin", "Blood Thinners", "Alcohol"];
+    medication["sideEffects"] = ["Nausea", "Dizziness", "Stomach pain", "Rash"];
+  }
+
+  const retrieveMedications = async (iddddd) => {
+    try {
+      const userInfo = await retrieveUserInformation(iddddd)
+      userInfo.savedMedications.forEach(addMedicationDetails)
+      setSavedMedications(userInfo.savedMedications)
+      setLoading(false);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   useEffect(() => {
+
+    const unsubscribe = auth.onAuthStateChanged((currentUser) => {
+      if (currentUser) {
+        setUserID(currentUser.uid)
+        retrieveMedications(currentUser.uid);
+      } 
+    });
     const testMeds = [
       {
         id: 1,
@@ -28,18 +56,18 @@ const SavedMedications = () => {
       },
     ];
 
-    setSavedMedications(testMeds);
-    setLoading(false);
+    //setSavedMedications(testMeds);
+    //setLoading(false);
 
   }, []);
-  const handleDelete = (id) => {
+  const handleDelete = (medicationDeleting) => {
     // Confirmation dialog
     const confirmed = window.confirm("Are you sure you want to delete this medication from your profile?");
     if (!confirmed) return;
 
     // update state to remove med using id (change if it's stored differently)
-    setSavedMedications((prev) => prev.filter((medication) => medication.id !== id));
-
+    setSavedMedications((prev) => prev.filter((medication) => medication.id !== medicationDeleting.id));
+    deleteMedication(userID, medicationDeleting.dosage, medicationDeleting.endDate, medicationDeleting.frequency, medicationDeleting.startDate, medicationDeleting.dIN);
     // api call to delete
     /*
     axios
@@ -92,7 +120,7 @@ const SavedMedications = () => {
               ))}
             </ul>
             <button
-              onClick={() => handleDelete(medication.id)}
+              onClick={() => handleDelete(medication)}
               style={{
                 backgroundColor: '#ff4d4d',
                 color: 'white',

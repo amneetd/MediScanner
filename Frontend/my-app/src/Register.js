@@ -4,6 +4,7 @@ import '@fortawesome/fontawesome-free/css/all.min.css';
 import 'react-phone-number-input/style.css'; 
 import PhoneInput from 'react-phone-number-input';  
 import './index.css';
+import { registerUser } from "./Firebase-Configurations/firestore.js"
 
 const Register = () => {
   const navigate = useNavigate();
@@ -33,6 +34,7 @@ const Register = () => {
 
     // route if valid
     setErrorMessage('');
+    registerUser(username, email, phoneNumber, password);
     navigate('/upload');
   };
 
