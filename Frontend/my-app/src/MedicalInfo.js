@@ -10,7 +10,10 @@ const MedicalInfo = () => {
   const [loading, setLoading] = useState(true);
   const [savedMedications, setSavedMedications] = useState([]);
   const [reminders, setReminders] = useState([]);
-  const [userID, setUserID] = useState(null);  
+  const [userID, setUserID] = useState(null);
+  const [amountOfTime, setAmountOfTime] = useState(null);  
+  const [hideShowDropdown, setHideShowDropdown] = useState(true); 
+  const [selectedUnit, setSelectedUnit] = useState("Select Unit"); 
 
 
   useEffect(() => {
@@ -43,7 +46,7 @@ const MedicalInfo = () => {
       frequency: "weekly",
       interactions: ["Aspirin", "Blood Thinners", "Alcohol"],
       sideEffects: ["Nausea", "Dizziness", "Stomach pain", "Rash"],
-      dIN: 111114
+      dIN: 111121
     };
 
     setMedicationData(sampleData);
@@ -53,7 +56,7 @@ const MedicalInfo = () => {
   const handleSave = () => {
     if (medicationData) {
       setSavedMedications((prev) => [...prev, medicationData]);
-      saveMedication(userID, medicationData.dosage, "finishDate", medicationData.frequency, "beginOn", medicationData.dIN)
+      saveMedication(userID, medicationData.dosage, "finishDate", amountOfTime, selectedUnit, "beginOn", medicationData.dIN)
       console.log("Medication saved:", medicationData);
       alert(`${medicationData.name} has been saved. You can now view it under the 'Saved Medications' tab`);
     }
@@ -123,7 +126,100 @@ const MedicalInfo = () => {
         <h2>Dosage</h2>
         <div style={{flexDirection: 'row', display: 'flex'}}>
 
-        <p>{medicationData.dosage + " " + medicationData.frequency}</p>
+        <p>{medicationData.dosage + " every "}</p>
+        <input onChange={e => setAmountOfTime(e.target.value)} placeholder='12' type='number'
+        style={{
+          width: '40px',
+          fontSize: 16,
+          borderColor: '#6B83FF',
+          borderWidth: '1px',
+          margin: '0px 10px 0px 10px'
+        }}>
+        </input>
+        <div style={{
+            position: "relative",
+            display: "inline-block",
+        }}>
+          <button onClick={e => {setHideShowDropdown(!hideShowDropdown); console.log(hideShowDropdown)}}
+            style={{
+              height: '50px',
+              width: '80px',
+              backgroundColor: 'white',
+              borderColor: '#6B83FF',
+              borderWidth: '1px'
+            }}>
+              {selectedUnit}
+          </button>
+          <div style={(hideShowDropdown) ? 
+            {display: 'none'} : 
+            {
+              display: 'grid',
+              gridTempleColumns: 'auto',
+              zIndex: 1,
+              position: 'absolute',
+            }}>
+            <button onClick={e => {setSelectedUnit("Hours"); setHideShowDropdown(!hideShowDropdown);}}
+            style={(selectedUnit === 'Hours') ? {
+              height: '50px',
+              width: '80px',
+              backgroundColor: '#EAEAEA',
+              borderColor: '#6B83FF',
+              borderWidth: '0px 1px 0px 1px'
+            } : 
+            { 
+              height: '50px',
+              width: '80px',
+              backgroundColor: 'white',
+              borderColor: '#6B83FF',
+              borderWidth: '0px 1px 0px 1px'}}
+            >Hours</button>
+            <button onClick={e => {setSelectedUnit("Days"); setHideShowDropdown(!hideShowDropdown);}}
+              style={(selectedUnit === 'Days') ? {
+                height: '50px',
+                width: '80px',
+                backgroundColor: '#EAEAEA',
+                borderColor: '#6B83FF',
+                borderWidth: '0px 1px 0px 1px'
+              } : 
+              { 
+                height: '50px',
+                width: '80px',
+                backgroundColor: 'white',
+                borderColor: '#6B83FF',
+                borderWidth: '0px 1px 0px 1px'}}
+            >Days</button>
+            <button onClick={e => {setSelectedUnit("Weeks"); setHideShowDropdown(!hideShowDropdown);}}
+              style={(selectedUnit === 'Weeks') ? {
+                height: '50px',
+                width: '80px',
+                backgroundColor: '#EAEAEA',
+                borderColor: '#6B83FF',
+                borderWidth: '0px 1px 0px 1px'
+              } : 
+              { 
+                height: '50px',
+                width: '80px',
+                backgroundColor: 'white',
+                borderColor: '#6B83FF',
+                borderWidth: '0px 1px 0px 1px'}}
+            >Weeks</button>
+            <button onClick={e => {setSelectedUnit("Months"); setHideShowDropdown(!hideShowDropdown);}}
+              style={(selectedUnit === 'Months') ? {
+                height: '50px',
+                width: '80px',
+                backgroundColor: '#EAEAEA',
+                borderColor: '#6B83FF',
+                borderWidth: '0px 1px 1px 1px'
+              } : 
+              { 
+                height: '50px',
+                width: '80px',
+                backgroundColor: 'white',
+                borderColor: '#6B83FF',
+                borderWidth: '0px 1px 1px 1px'}}
+            >Months</button>
+          </div>
+        </div>
         <button
           onClick={() => speakText(`Dosage: ${medicationData.dosage + " " + medicationData.frequency}`)}
           style={{

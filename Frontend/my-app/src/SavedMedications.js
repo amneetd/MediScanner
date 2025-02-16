@@ -67,7 +67,7 @@ const SavedMedications = () => {
 
     // update state to remove med using id (change if it's stored differently)
     setSavedMedications((prev) => prev.filter((medication) => medication.id !== medicationDeleting.id));
-    deleteMedication(userID, medicationDeleting.dosage, medicationDeleting.endDate, medicationDeleting.frequency, medicationDeleting.startDate, medicationDeleting.dIN);
+    deleteMedication(userID, medicationDeleting.dosage, medicationDeleting.endDate, medicationDeleting.frequency, medicationDeleting.frequencyUnit, medicationDeleting.startDate, medicationDeleting.dIN);
     // api call to delete
     /*
     axios
