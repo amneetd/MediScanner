@@ -11,9 +11,11 @@ const MedicalInfo = () => {
   const [savedMedications, setSavedMedications] = useState([]);
   const [reminders, setReminders] = useState([]);
   const [userID, setUserID] = useState(null);
-  const [amountOfTime, setAmountOfTime] = useState(null);  
+  const [amountOfTime, setAmountOfTime] = useState("");  
   const [hideShowDropdown, setHideShowDropdown] = useState(true); 
   const [selectedUnit, setSelectedUnit] = useState("Select Unit"); 
+  const [startDate, setStartDate] = useState(null); 
+  const [startTime, setStartTime] = useState(null); 
 
 
   useEffect(() => {
@@ -56,7 +58,7 @@ const MedicalInfo = () => {
   const handleSave = () => {
     if (medicationData) {
       setSavedMedications((prev) => [...prev, medicationData]);
-      saveMedication(userID, medicationData.dosage, "finishDate", amountOfTime, selectedUnit, "beginOn", medicationData.dIN)
+      saveMedication(userID, medicationData.dosage, "finishDate", amountOfTime, selectedUnit, `${startDate}T${startTime}:00`, medicationData.dIN)
       console.log("Medication saved:", medicationData);
       alert(`${medicationData.name} has been saved. You can now view it under the 'Saved Medications' tab`);
     }
@@ -233,6 +235,38 @@ const MedicalInfo = () => {
           }}
         >
           Speak Dosage
+        </button>
+        </div>
+      </div>
+
+      <div style={{ marginBottom: '20px' }}>
+        <h2>Start Taking On</h2>
+        <div style={{flexDirection: 'row', display: 'flex'}}>
+        <input type="date" onChange={e => setStartDate(e.target.value)}></input>
+        <input type="time" onChange={e => setStartTime(e.target.value)}
+        style={{
+          width: '100px',
+          marginLeft: '20px'
+        }}>
+        </input>
+        <button
+          onClick={() =>
+            speakText(
+              `Interactions: ${medicationData.interactions.join(', ')}`
+            )
+          }
+          style={{
+            backgroundColor: '#6b83ff',
+            color: 'white',
+            padding: '5px 10px',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: 'pointer',
+            marginLeft: '20px'
+            //fix the button size (make it absolute, not dynamic)
+          }}
+        >
+          Speak Start Date
         </button>
         </div>
       </div>
