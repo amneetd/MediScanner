@@ -20,9 +20,9 @@ const SavedMedications = () => {
     medication["sideEffects"] = ["Nausea", "Dizziness", "Stomach pain", "Rash"];
   }
 
-  const retrieveMedications = async (iddddd) => {
+  const retrieveMedications = async (id) => {
     try {
-      const userInfo = await retrieveUserInformation(iddddd)
+      const userInfo = await retrieveUserInformation(id)
       userInfo.savedMedications.forEach(addMedicationDetails)
       setSavedMedications(userInfo.savedMedications)
       setLoading(false);

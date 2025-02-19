@@ -58,6 +58,25 @@ const Calendar = () => {
     return daysArray;
   };
 
+  const selectedDateMedications = () => {
+    const startDate = new Date("2025-02-17T23:00:00");
+    const endDate = new Date("2025-02-27T12:00:00");
+    const viewingDate = new Date(`${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDay).padStart(2, '0')}T23:59:59`)
+    const frequency = 50;
+    if(startDate <= viewingDate && viewingDate <= endDate){
+      if(((viewingDate - startDate) % (86400000 * (frequency / 24))) < 86400000){
+        console.log("Medication name is taken today");
+        const numberOfCycles = Math.floor((viewingDate - startDate) / (86400000 * (frequency / 24)));
+        const medicationTime = new Date("2025-02-17T23:00:00");
+        medicationTime.setHours(medicationTime.getHours() + numberOfCycles * frequency);
+        console.log("Take medication at: ", medicationTime.getHours(), medicationTime.getMinutes(), medicationTime.getSeconds())
+      }
+      else{
+        console.log("Medication name not taken on this day")
+      }
+    }
+  }
+
   return (
     <div className="calendar-container">
       <div className="calendar">
@@ -87,6 +106,7 @@ const Calendar = () => {
           <p>Details here: </p>
         </div>
       )}
+      <button onClick={selectedDateMedications}>activate selectedDateMedications function</button>
     </div>
   );
 };
