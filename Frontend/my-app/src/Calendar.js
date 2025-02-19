@@ -4,14 +4,36 @@
  * - a user should be able to remove an item from the calendar (either a one-time thing or for every instance)
  */
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { retrieveUserInformation } from "./Firebase-Configurations/firestore.js"
+import { auth } from './Firebase-Configurations/firebaseConfig';
 import "./Calendar.css";
 
 const Calendar = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDay, setSelectedDay] = useState(null); // To store the selected day
+  const [userID, setUserID] = useState(null);  
+  const [savedMedications, setSavedMedications] = useState([]);
 
   const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+  const retrieveMedications = async (id) => {
+    try {
+      const userInfo = await retrieveUserInformation(id)
+      setSavedMedications(userInfo.savedMedications)
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((currentUser) => {
+      if (currentUser) {
+        setUserID(currentUser.uid)
+        retrieveMedications(currentUser.uid);
+      } 
+    });
+  }, []);
 
   const getDaysInMonth = (year, month) => {
     return new Date(year, month + 1, 0).getDate();
