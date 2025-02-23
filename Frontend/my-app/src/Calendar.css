@@ -78,3 +78,8 @@
   .info-box h2 {
     margin: 0 0 10px;
   }
+
+  .medication-times-box{
+    display: flex;
+    flex-direction: column;
+  }

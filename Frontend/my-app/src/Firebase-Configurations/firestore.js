@@ -68,21 +68,57 @@ export const registerUser = async (username, email, phoneNumber, password) => {
 }
 
 
-export const saveMedication = async (userUID, dose, finishDate, howOften, beginOn, DrugIDNum) => {
+export const updatePrescriptionInstructions = async (userUID, medicationDIN, newDosage, newEndDate, newFrequency, newFrequencyUnit, newStartDate) => {
     const docRef = doc(db, "users", userUID);
-    await updateDoc(docRef, {
-        savedMedications: arrayUnion({
-            dosage: dose,
-            endDate: finishDate,
-            frequency: howOften,
-            startDate: beginOn,
-            dIN: DrugIDNum
-        })
-    });
+    const docSnap = await getDoc(docRef);
+    if(docSnap.exists()){
+        const usersMedications = docSnap.data().savedMedications;
+        const location = usersMedications.findIndex(medication => medication.dIN === medicationDIN);
+        console.log(usersMedications)
+        console.log(location)
+        if(location > -1){
+            usersMedications[location].dosage = newDosage;
+            usersMedications[location].endDate = newEndDate;
+            usersMedications[location].frequency = newFrequency;
+            usersMedications[location].frequencyUnit = newFrequencyUnit;
+            usersMedications[location].startDate = newStartDate;
+            try{
+                await updateDoc(docRef, { savedMedications: usersMedications });
+            }
+            catch(error){
+                console.log(error)
+            }
+        }
+    }
 }
 
 
-export const deleteMedication = async (userUID, dose, finishDate, howOften, beginOn, DrugIDNum) => {
+export const saveMedication = async (userUID, dose, finishDate, howOften, timeUnit, beginOn, drugIDNum) => {
+    const docRef = doc(db, "users", userUID);
+    const docSnap = await getDoc(docRef);
+    if(docSnap.exists()){
+        const usersMedications = docSnap.data().savedMedications;
+        const location = usersMedications.findIndex(medication => medication.dIN === drugIDNum);
+        if(location > -1){
+            updatePrescriptionInstructions(userUID, drugIDNum, dose, finishDate, howOften, timeUnit, beginOn);
+        }
+        else{
+            await updateDoc(docRef, {
+                savedMedications: arrayUnion({
+                    dosage: dose,
+                    endDate: finishDate,
+                    frequency: Number(howOften),
+                    frequencyUnit: timeUnit,
+                    startDate: beginOn,
+                    dIN: drugIDNum
+                })
+            });
+        }
+    }
+}
+
+
+export const deleteMedication = async (userUID, dose, finishDate, howOften, timeUnit, beginOn, DrugIDNum) => {
     const docRef = doc(db, "users", userUID);
     const docSnap = await getDoc(docRef);
     console.log(docSnap.data())
@@ -92,6 +128,7 @@ export const deleteMedication = async (userUID, dose, finishDate, howOften, begi
             dosage: dose,
             endDate: finishDate,
             frequency: howOften,
+            frequencyUnit: timeUnit,
             startDate: beginOn,
             dIN: DrugIDNum
         })
@@ -114,28 +151,4 @@ export const changeUsersPassword = async (newPassword) => {
     }).catch((error) => {
         console.log(error)
     });
-}
-
-
-export const updatePrescriptionInstructions = async (userUID, medicationDIN, newDosage, newEndDate, newFrequency, newStartDate) => {
-    const docRef = doc(db, "users", userUID);
-    const docSnap = await getDoc(docRef);
-    if(docSnap.exists()){
-        const usersMedications = docSnap.data().savedMedications
-        const location = usersMedications.findIndex(medication => medication.dIN === medicationDIN)
-        console.log(usersMedications)
-        console.log(location)
-        if(location > -1){
-            usersMedications[location].dosage = newDosage;
-            usersMedications[location].endDate = newEndDate;
-            usersMedications[location].frequency = newFrequency;
-            usersMedications[location].startDate = newStartDate;
-            try{
-                await updateDoc(docRef, { savedMedications: usersMedications });
-            }
-            catch(error){
-                console.log(error)
-            }
-        }
-    }
 }

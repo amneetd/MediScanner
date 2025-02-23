@@ -10,7 +10,15 @@ const MedicalInfo = () => {
   const [loading, setLoading] = useState(true);
   const [savedMedications, setSavedMedications] = useState([]);
   const [reminders, setReminders] = useState([]);
-  const [userID, setUserID] = useState(null);  
+  const [userID, setUserID] = useState(null);
+  const [amountOfTime, setAmountOfTime] = useState("");  
+  const [hideShowDropdown, setHideShowDropdown] = useState(true); 
+  const [selectedUnit, setSelectedUnit] = useState("Select Unit"); 
+  const [startDate, setStartDate] = useState(null); 
+  const [startTime, setStartTime] = useState(null); 
+  const [endDate, setEndDate] = useState(""); 
+  const [endTime, setEndTime] = useState(""); 
+  const [takingIndefinitely, setTakingIndefinitely] = useState(false); 
 
 
   useEffect(() => {
@@ -43,7 +51,7 @@ const MedicalInfo = () => {
       frequency: "weekly",
       interactions: ["Aspirin", "Blood Thinners", "Alcohol"],
       sideEffects: ["Nausea", "Dizziness", "Stomach pain", "Rash"],
-      dIN: 111114
+      dIN: 111123
     };
 
     setMedicationData(sampleData);
@@ -51,11 +59,29 @@ const MedicalInfo = () => {
   }, []);
 
   const handleSave = () => {
-    if (medicationData) {
+    if (medicationData && startDate && startTime && (endDate || takingIndefinitely) && (endTime || takingIndefinitely) && selectedUnit !== "Select Unit" && amountOfTime.length > 0) {
       setSavedMedications((prev) => [...prev, medicationData]);
-      saveMedication(userID, medicationData.dosage, "finishDate", medicationData.frequency, "beginOn", medicationData.dIN)
+      saveMedication(userID, medicationData.dosage, (takingIndefinitely) ? "indefinitely" :`${endDate}T${endTime}:00`, amountOfTime, selectedUnit, `${startDate}T${startTime}:00`, medicationData.dIN)
       console.log("Medication saved:", medicationData);
       alert(`${medicationData.name} has been saved. You can now view it under the 'Saved Medications' tab`);
+    }
+    else if(!startDate){
+      alert("Please enter a start date for the medication.")
+    }
+    else if(!startTime){
+      alert("Please enter a start time for the medication.")
+    }
+    else if(!endDate){
+      alert("Please enter a end date for the medication or check the indefinite box if taking the medication for an indefinite amount of time.")
+    }
+    else if(!endTime){
+      alert("Please enter a end time for the medication.")
+    }
+    else if(selectedUnit === "Select Unit"){
+      alert("Please select the unit of time for between each dosage.")
+    }
+    else if(amountOfTime.length < 1){
+      alert("Please enter the time between each dosage.")
     }
   };
 
@@ -123,9 +149,102 @@ const MedicalInfo = () => {
         <h2>Dosage</h2>
         <div style={{flexDirection: 'row', display: 'flex'}}>
 
-        <p>{medicationData.dosage + " " + medicationData.frequency}</p>
+        <p>{medicationData.dosage + " every "}</p>
+        <input onChange={e => setAmountOfTime(e.target.value)} placeholder='12' type='number'
+        style={{
+          width: '40px',
+          fontSize: 16,
+          borderColor: '#6B83FF',
+          borderWidth: '1px',
+          margin: '0px 10px 0px 10px'
+        }}>
+        </input>
+        <div style={{
+            position: "relative",
+            display: "inline-block",
+        }}>
+          <button onClick={e => {setHideShowDropdown(!hideShowDropdown); console.log(hideShowDropdown)}}
+            style={{
+              height: '50px',
+              width: '80px',
+              backgroundColor: 'white',
+              borderColor: '#6B83FF',
+              borderWidth: '1px'
+            }}>
+              {selectedUnit}
+          </button>
+          <div style={(hideShowDropdown) ? 
+            {display: 'none'} : 
+            {
+              display: 'grid',
+              gridTempleColumns: 'auto',
+              zIndex: 1,
+              position: 'absolute',
+            }}>
+            <button onClick={e => {setSelectedUnit("Hours"); setHideShowDropdown(!hideShowDropdown);}}
+            style={(selectedUnit === 'Hours') ? {
+              height: '50px',
+              width: '80px',
+              backgroundColor: '#EAEAEA',
+              borderColor: '#6B83FF',
+              borderWidth: '0px 1px 0px 1px'
+            } : 
+            { 
+              height: '50px',
+              width: '80px',
+              backgroundColor: 'white',
+              borderColor: '#6B83FF',
+              borderWidth: '0px 1px 0px 1px'}}
+            >Hours</button>
+            <button onClick={e => {setSelectedUnit("Days"); setHideShowDropdown(!hideShowDropdown);}}
+              style={(selectedUnit === 'Days') ? {
+                height: '50px',
+                width: '80px',
+                backgroundColor: '#EAEAEA',
+                borderColor: '#6B83FF',
+                borderWidth: '0px 1px 0px 1px'
+              } : 
+              { 
+                height: '50px',
+                width: '80px',
+                backgroundColor: 'white',
+                borderColor: '#6B83FF',
+                borderWidth: '0px 1px 0px 1px'}}
+            >Days</button>
+            <button onClick={e => {setSelectedUnit("Weeks"); setHideShowDropdown(!hideShowDropdown);}}
+              style={(selectedUnit === 'Weeks') ? {
+                height: '50px',
+                width: '80px',
+                backgroundColor: '#EAEAEA',
+                borderColor: '#6B83FF',
+                borderWidth: '0px 1px 0px 1px'
+              } : 
+              { 
+                height: '50px',
+                width: '80px',
+                backgroundColor: 'white',
+                borderColor: '#6B83FF',
+                borderWidth: '0px 1px 0px 1px'}}
+            >Weeks</button>
+            <button onClick={e => {setSelectedUnit("Months"); setHideShowDropdown(!hideShowDropdown);}}
+              style={(selectedUnit === 'Months') ? {
+                height: '50px',
+                width: '80px',
+                backgroundColor: '#EAEAEA',
+                borderColor: '#6B83FF',
+                borderWidth: '0px 1px 1px 1px'
+              } : 
+              { 
+                height: '50px',
+                width: '80px',
+                backgroundColor: 'white',
+                borderColor: '#6B83FF',
+                borderWidth: '0px 1px 1px 1px'}}
+            >Months</button>
+          </div>
+        </div>
         <button
-          onClick={() => speakText(`Dosage: ${medicationData.dosage + " " + medicationData.frequency}`)}
+          onClick={() => speakText(`Dosage: ${medicationData.dosage} every ${amountOfTime} ${selectedUnit}`)}
           style={{
             backgroundColor: '#6b83ff',
             color: 'white',
@@ -139,6 +258,76 @@ const MedicalInfo = () => {
           Speak Dosage
         </button>
         </div>
+      </div>
+
+      <div style={{ marginBottom: '20px' }}>
+        <h2>Start Taking On</h2>
+        <div style={{flexDirection: 'row', display: 'flex'}}>
+        <input type="date" onChange={e => setStartDate(e.target.value)}></input>
+        <input type="time" onChange={e => setStartTime(e.target.value)}
+        style={{
+          width: '100px',
+          marginLeft: '20px'
+        }}>
+        </input>
+        <button
+          onClick={() =>
+            speakText(`Start taking on ${startDate} at ${startTime}`)
+          }
+          style={{
+            backgroundColor: '#6b83ff',
+            color: 'white',
+            padding: '5px 10px',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: 'pointer',
+            marginLeft: '20px'
+            //fix the button size (make it absolute, not dynamic)
+          }}
+        >
+          Speak Start Date
+        </button>
+        </div>
+      </div>
+
+      <div style={{ marginBottom: '20px' }}>
+        <h2>Finish Taking On</h2>
+        <div style={{flexDirection: 'row', display: 'flex'}}>
+        <input type="date" onChange={e => setEndDate(e.target.value)} disabled={takingIndefinitely} value={endDate}></input>
+        <input type="time" onChange={e => setEndTime(e.target.value)} disabled={takingIndefinitely} value={endTime}
+        style={{
+          width: '100px',
+          marginLeft: '20px'
+        }}>
+        </input>
+        <button
+          onClick={() =>
+            speakText((takingIndefinitely) 
+            ? 
+            "No finish date. Taking for an indefinite amount of time" 
+            : 
+            `Finish taking on ${endDate} at ${endTime}`)
+          }
+          style={{
+            backgroundColor: '#6b83ff',
+            color: 'white',
+            padding: '5px 10px',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: 'pointer',
+            marginLeft: '20px'
+            //fix the button size (make it absolute, not dynamic)
+          }}
+        >
+          Speak End Date
+        </button>
+        </div>
+        <input type='checkbox' id='taking-indefinitely' onChange={e => {setTakingIndefinitely(e.target.checked); setEndDate(""); setEndTime("")}}
+          style={{
+            marginTop: '20px'
+          }}>
+        </input>
+        <label htmlFor='taking-indefinitely'>Taking Indefinitely</label>
       </div>
 
       <div style={{ marginBottom: '20px' }}>

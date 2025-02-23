@@ -20,9 +20,9 @@ const SavedMedications = () => {
     medication["sideEffects"] = ["Nausea", "Dizziness", "Stomach pain", "Rash"];
   }
 
-  const retrieveMedications = async (iddddd) => {
+  const retrieveMedications = async (id) => {
     try {
-      const userInfo = await retrieveUserInformation(iddddd)
+      const userInfo = await retrieveUserInformation(id)
       userInfo.savedMedications.forEach(addMedicationDetails)
       setSavedMedications(userInfo.savedMedications)
       setLoading(false);
@@ -67,7 +67,7 @@ const SavedMedications = () => {
 
     // update state to remove med using id (change if it's stored differently)
     setSavedMedications((prev) => prev.filter((medication) => medication.id !== medicationDeleting.id));
-    deleteMedication(userID, medicationDeleting.dosage, medicationDeleting.endDate, medicationDeleting.frequency, medicationDeleting.startDate, medicationDeleting.dIN);
+    deleteMedication(userID, medicationDeleting.dosage, medicationDeleting.endDate, medicationDeleting.frequency, medicationDeleting.frequencyUnit, medicationDeleting.startDate, medicationDeleting.dIN);
     // api call to delete
     /*
     axios
