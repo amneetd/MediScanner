@@ -2,7 +2,7 @@ import os
 import requests
 
 # Folder containing the images to send
-folder_path = "ScannedPhotos"
+folder_path = "/home/tkmet/Desktop/Capstone/Photos"
 
 # URL for the server's upload endpoint; make sure the port and route match the server.
 server_url = 'http://192.168.4.240:5001/upload'
