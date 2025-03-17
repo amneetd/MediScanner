@@ -2,6 +2,8 @@ import React, { useCallback, useState, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 import './index.css';
 import { useNavigate } from 'react-router-dom'; 
+import axios from 'axios';
+import ExtractDinPopup from './ExtractDinPopup';
 
 
 const DropzoneComponent = ({ onDrop }) => {
@@ -9,12 +11,19 @@ const DropzoneComponent = ({ onDrop }) => {
   const navigate = useNavigate();
   const [showTermsModal, setShowTermsModal] = useState(false);
   const [isTermsAccepted, setIsTermsAccepted] = useState(false);
+  const [showWaitPopup, setShowWaitPopup] = useState(false);
 
 
   const handleDrop = useCallback((acceptedFiles) => {
     const file = acceptedFiles[0]; //Restricts to one file
     if (file) {
-      setSelectedFile(file);
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onloadend = function() {
+          const data = reader.result;
+          setSelectedFile(data);
+      }
+      //setSelectedFile(file);
       onDrop(file);
     }
   }, [onDrop]);
@@ -27,12 +36,23 @@ const DropzoneComponent = ({ onDrop }) => {
     }
   };
 
-  const handleAcceptTerms = () => {
+  const handleAcceptTerms = async () => {
     setIsTermsAccepted(true);
     setShowTermsModal(false); 
-
+    setShowWaitPopup(true)
     console.log('Uploading file:', selectedFile); //copied from handleUpload
-    navigate('/medicalinfo'); 
+    // try{
+    //   const medicationIdentifier = await axios
+    //   .post("endpoint", {
+    //     "selectedFile" : selectedFile
+    //   })
+    //   console.log(medicationIdentifier)
+    //   setShowWaitPopup(false)
+    // }
+    // catch{
+    //   setShowWaitPopup(false)
+    // }
+    //navigate('/medicalinfo'); 
   };
 
   const handleRejectTerms = () => {
@@ -75,6 +95,9 @@ const DropzoneComponent = ({ onDrop }) => {
           Upload this file
         </button>
       )}
+
+
+      {showWaitPopup && <ExtractDinPopup />}
 
         {showTermsModal && (
         <div className="terms-modal">

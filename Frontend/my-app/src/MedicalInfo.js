@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { saveMedication } from "./Firebase-Configurations/firestore.js"
 import { auth } from './Firebase-Configurations/firebaseConfig';
+import ConfirmMedicationInfo from './ConfirmMedicationInfo.js';
 
 const MedicalInfo = () => {
   const [medicationData, setMedicationData] = useState(null);
@@ -18,7 +19,8 @@ const MedicalInfo = () => {
   const [startTime, setStartTime] = useState(null); 
   const [endDate, setEndDate] = useState(""); 
   const [endTime, setEndTime] = useState(""); 
-  const [takingIndefinitely, setTakingIndefinitely] = useState(false); 
+  const [takingIndefinitely, setTakingIndefinitely] = useState(false);
+  const [confirmInfoPopup, setConfirmInfoPopup] = useState(false);  
 
 
   useEffect(() => {
@@ -58,12 +60,25 @@ const MedicalInfo = () => {
     setLoading(false);
   }, []);
 
-  const handleSave = () => {
-    if (medicationData && startDate && startTime && (endDate || takingIndefinitely) && (endTime || takingIndefinitely) && selectedUnit !== "Select Unit" && amountOfTime.length > 0) {
+
+  const handleConfirmSave = (selectedOption) => {
+    if(selectedOption === "Yes"){
       setSavedMedications((prev) => [...prev, medicationData]);
       saveMedication(userID, medicationData.dosage, (takingIndefinitely) ? "indefinitely" :`${endDate}T${endTime}:00`, amountOfTime, selectedUnit, `${startDate}T${startTime}:00`, medicationData.dIN)
       console.log("Medication saved:", medicationData);
+      setConfirmInfoPopup(false);
       alert(`${medicationData.name} has been saved. You can now view it under the 'Saved Medications' tab`);
+    }
+    else{
+      setConfirmInfoPopup(false);
+    }
+    console.log("handles confirmation of save", selectedOption)
+  }
+
+
+  const handleSave = () => {
+    if (medicationData && startDate && startTime && (endDate || takingIndefinitely) && (endTime || takingIndefinitely) && selectedUnit !== "Select Unit" && amountOfTime.length > 0) {
+      setConfirmInfoPopup(true);
     }
     else if(!startDate){
       alert("Please enter a start date for the medication.")
@@ -121,6 +136,14 @@ const MedicalInfo = () => {
 
   return (
     <div style={{ fontFamily: 'Arial, sans-serif', padding: '20px' }}>
+      
+      {confirmInfoPopup && <ConfirmMedicationInfo 
+                              startOn={`${startDate} At ${startTime}`} 
+                              endOn={(takingIndefinitely) ? "Taking Indefinitely" : `${endDate} At ${endTime}`} 
+                              frequency={`${amountOfTime} ${selectedUnit}`} 
+                              handleConfirmation={handleConfirmSave}
+                            />}
+
       <h1 style={{ color: '#333' }}>Medical Information</h1>
       <br/>
 
