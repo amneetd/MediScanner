@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "paddlepaddle": "^1.0.5"
+  }
+}
