@@ -5,6 +5,25 @@ import { onAuthStateChanged } from "firebase/auth";
 import { db, auth } from "./Firebase-Configurations/firebaseConfig.js"
 
 const UploadPage = () => {
+  //RaspberryPi IP address
+  const triggerUrl = 'http://192.168.7.42:5002/trigger';
+
+  const handleGetPhotos = async () => {
+    try {
+      const response = await fetch(triggerUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      const data = await response.json();
+      console.log('Server response:', data);
+      // You can display a message to the user or update the UI based on the response.
+    } catch (error) {
+      console.error('Error triggering photos:', error);
+    }
+  };
+
     const handleDrop = useCallback((acceptedFiles) => {
         // Handle the uploaded files
         console.log(acceptedFiles);
@@ -34,6 +53,7 @@ const UploadPage = () => {
         <div className="right-section">
           <h2>Upload Your Image</h2>
           <DropzoneComponent onDrop={handleDrop} />
+          <button onClick={handleGetPhotos}>Scan Photos</button>
         </div>
       </div>
       <footer>
