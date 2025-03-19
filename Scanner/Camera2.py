@@ -30,7 +30,7 @@ picam2 = Picamera2()
 #picam2.start_preview(Preview.QTGL)  # Optional preview; comment out if not needed
 
 # Use a still image configuration
-config = picam2.create_still_configuration({"size": (2500, 2500)})
+config = picam2.create_still_configuration({"size": (300, 300)})
 picam2.configure(config)
 picam2.start()
 time.sleep(2)  # Warm‑up time for the camera
