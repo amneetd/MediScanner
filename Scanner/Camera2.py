@@ -2,49 +2,48 @@
 
 import os
 import time
-from datetime import datetime
 from picamera2 import Picamera2, Preview
 
-# Create the main Calibration folder if it doesn't exist
-calibration_dir = "Calibration"
+# Create the Calibration2 folder if it doesn't exist
+calibration_dir = "Calibration2"
 os.makedirs(calibration_dir, exist_ok=True)
 
-# Determine the next test folder name inside Calibration
-existing_tests = [
-    d for d in os.listdir(calibration_dir)
-    if os.path.isdir(os.path.join(calibration_dir, d)) and d.startswith("Test")
+# Determine next image number based on existing images in Calibration2
+existing_images = [
+    f for f in os.listdir(calibration_dir)
+    if f.startswith("distance") and f.endswith(".jpg")
 ]
-if existing_tests:
-    # Extract the numeric part and increment it
-    test_numbers = [int(d.replace("Test", "")) for d in existing_tests if d.replace("Test", "").isdigit()]
-    next_test_number = max(test_numbers) + 1 if test_numbers else 1
+if existing_images:
+    numbers = []
+    for filename in existing_images:
+        # Extract numeric part from filename: remove 'distance' prefix and '.jpg' suffix
+        num_part = filename[len("distance"):filename.rfind(".")]
+        if num_part.isdigit():
+            numbers.append(int(num_part))
+    next_image_number = max(numbers) + 1 if numbers else 1
 else:
-    next_test_number = 1
+    next_image_number = 1
 
-test_folder = os.path.join(calibration_dir, f"Test{next_test_number}")
-os.makedirs(test_folder, exist_ok=True)
-print(f"Saving images in: {test_folder}")
+image_filename = os.path.join(calibration_dir, f"distance{next_image_number}.jpg")
+print(f"Saving image in: {image_filename}")
 
 # Setup the camera
 picam2 = Picamera2()
-#picam2.start_preview(Preview.QTGL)  # Optional preview; comment out if not needed
+# Uncomment the following line to enable preview if desired
+# picam2.start_preview(Preview.QTGL)
 
 # Use a still image configuration
-config = picam2.create_still_configuration({"size": (300, 300)})
+config = picam2.create_still_configuration({"size": (2592, 2592)})
 picam2.configure(config)
 picam2.start()
 time.sleep(2)  # Warm‑up time for the camera
 
-# Capture 3 still photos and save them in the test folder
-for i in range(1, 4):
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")[:-3]
-    filename = os.path.join(test_folder, f"{timestamp}_img{i:02d}.jpg")
-    picam2.capture_file(filename)
-    print(f"Captured image: {filename}")
-    time.sleep(0.5)  # Short delay between captures
+# Capture one still photo and save it
+picam2.capture_file(image_filename)
+print(f"Captured image: {image_filename}")
 
 # Shutdown the camera
 picam2.stop()
 picam2.stop_preview()
 
-print("Test capture complete.")
+print("Capture complete.")
