@@ -8,6 +8,8 @@ import React, { useState, useEffect } from "react";
 import { retrieveUserInformation } from "./Firebase-Configurations/firestore.js"
 import { auth } from './Firebase-Configurations/firebaseConfig';
 import "./Calendar.css";
+import DPDClient from './backend/DPD_Axios.js';
+import LNPHDClient from './backend/NPN_Axios.js'
 
 const Calendar = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -15,9 +17,40 @@ const Calendar = () => {
   const [userID, setUserID] = useState(null);  
   const [savedMedications, setSavedMedications] = useState([]);
   const [currentDateMedications, setCurrentDateMedications] = useState([]);
+  const [medicationCache, setMedicaionCache] = useState([]);
+  const [showLoadingSchedule, setShowLoadingSchedule] = useState(true); 
 
   const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   const frequencyUnitConversion = {"Hours" : 1, "Days" : 24, "Weeks" : 168}
+
+
+  const getMedication = async (medID) => {
+    try {
+      if(medID.slice(0, 3) === "DIN"){
+        const client = new DPDClient();
+        const med = await client.getAllInfo(medID.slice(3));
+        let temp = {};
+        temp["identifier"] = med.productInfo[0].drug_identification_number;
+        temp["medName"] = med.productInfo[0].brand_name;
+        console.log(med)
+        console.log(temp)
+        return temp;
+      }
+      else if(medID.slice(0, 3) === "NPN"){
+        const client = new LNPHDClient();
+        const med = await client.getAllInfo(medID.slice(3));
+        let temp = {};
+        temp["identifier"] = med.productInfo[0].drug_identification_number;
+        temp["medName"] = med.productInfo[0].brand_name;
+        console.log(med)
+        console.log(temp)
+        return temp;
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
 
   const retrieveMedications = async (id) => {
     try {
@@ -55,7 +88,8 @@ const Calendar = () => {
     setSelectedDay(null); // Clear the selected day when changing the month
   };
 
-  const selectedDateMedications = (newDay) => {
+  const selectedDateMedications = async (newDay) => {
+    setShowLoadingSchedule(true);
     setSelectedDay(newDay);
     var todaysMedications = []
     for(const med of savedMedications){
@@ -69,12 +103,23 @@ const Calendar = () => {
           const numberOfCycles = Math.floor((viewingDate - startDate) / (86400000 * (frequency / 24)));
           const medicationTime = new Date(med.startDate);
           medicationTime.setTime(medicationTime.getTime() + 86400000 * (numberOfCycles / (24 / frequency)));
+          let cachedMedications = medicationCache;
           while(medicationTime.getDate() === viewingDate.getDate() && startDate <= medicationTime){
             if(medicationTime <= endDate){
-              todaysMedications.push({medTime: new Date(medicationTime.getTime()), medName: med.dIN})
+              let i = cachedMedications.findIndex(item => item.identifier === med.dIN.slice(3));
+              if(-1 < i){
+                todaysMedications.push({medTime: new Date(medicationTime.getTime()), medName: cachedMedications[i].medName})
+              }
+              else{
+                const medCaching = await getMedication(med.dIN);
+                todaysMedications.push({medTime: new Date(medicationTime.getTime()), medName: medCaching.medName})
+                cachedMedications.push(medCaching);
+              }
+              //todaysMedications.push({medTime: new Date(medicationTime.getTime()), medName: med.dIN})
             }
             medicationTime.setTime(medicationTime.getTime() - (86400000 * (frequency / 24)));
           }
+          setMedicaionCache(cachedMedications);
         }
         else{
           console.log("Medication name not taken on this day")
@@ -82,6 +127,7 @@ const Calendar = () => {
       }
     }
     setCurrentDateMedications(todaysMedications.sort((med1, med2) => med1.medTime - med2.medTime))
+    setShowLoadingSchedule(false);
   }
 
   const renderDays = () => {
@@ -139,7 +185,10 @@ const Calendar = () => {
               selectedDay
             }, ${currentDate.getFullYear()}`} Medication Information</h2>
           <p>Details here: </p>
-          {<div className="medication-times-box">{currentDateMedications.map((medication, index)=> <div key={index}>{medication.medName} {((medication.medTime.getHours() % 12) === 0) ? "12" : (medication.medTime.getHours() % 12)}:{String(medication.medTime.getMinutes()).padStart(2, "0")} {(medication.medTime.getHours() < 12) ? "AM" : "PM"}</div>)}</div>}
+          {(showLoadingSchedule) ? 
+            <p>Loading medication schedule.</p>
+            : 
+            <div className="medication-times-box">{currentDateMedications.map((medication, index)=> <div key={index}>{medication.medName}: {((medication.medTime.getHours() % 12) === 0) ? "12" : (medication.medTime.getHours() % 12)}:{String(medication.medTime.getMinutes()).padStart(2, "0")} {(medication.medTime.getHours() < 12) ? "AM" : "PM"}</div>)}</div>}
         </div>
       )}
     </div>
