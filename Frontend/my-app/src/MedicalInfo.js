@@ -53,44 +53,18 @@ const MedicalInfo = () => {
 
 
   useEffect(() => {
-    //our api endpoint -- I'm assuming this is how we're going to do it
-    //const apiUrl = x;
-
-    //for when we have it integrated properly
-    /*axios
-      .get(apiUrl)
-      .then((response) => {
-        setMedicationData(response.data);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("There was an error fetching the medication data:", error);
-        setError("We were unable to load your medication information.");
-        setLoading(false);
-      });
-  }, []);
-*/
     const unsubscribe = auth.onAuthStateChanged((currentUser) => {
       if (currentUser) {
-        setUserID(currentUser.uid)
-      } 
+        setUserID(currentUser.uid);
+      } else {
+        setUserID(null);  // user is logged out
+      }
     });
-
-    const sampleData = {
-      name: "Ibuprofen",
-      dosage: "400mg",
-      frequency: "weekly",
-      interactions: ["Aspirin", "Blood Thinners", "Alcohol"],
-      sideEffects: ["Nausea", "Dizziness", "Stomach pain", "Rash"],
-      dIN: 111123
-    };
 
     console.log("Identifier: ",medicationIdentifier)
     if(medicationIdentifier){
-      getMedication("DIN00013803")
+      getMedication(medicationIdentifier)
     }
-    //setMedicationData(sampleData);
-    //setLoading(false);
   }, []);
 
 
@@ -159,6 +133,10 @@ const MedicalInfo = () => {
     }
   };
 
+  if (!medicationIdentifier) {
+    return <p>No medication scanned.</p>;
+  }
+
   if (loading) {
     return <p>Loading your medical information. Please wait</p>;
   }
@@ -205,55 +183,42 @@ const MedicalInfo = () => {
         <h2>Dosage</h2>
         <div style={{flexDirection: 'row', display: 'flex'}}>
 
-        <p>{`${ (medicationData.activeIngredients[0].dosage_unit === "") ? `${medicationData.activeIngredients[0].strength} ${medicationData.activeIngredients[0].strength_unit}` : `${medicationData.activeIngredients[0].dosage_unit} ${medicationData.activeIngredients[0].dosage_value}`}` + " every "}</p>
-        <input onChange={e => setAmountOfTime(e.target.value)} placeholder='12' type='number'
-        style={{
-          width: '40px',
-          fontSize: 16,
-          borderColor: '#6B83FF',
-          borderWidth: '1px',
-          margin: '0px 10px 0px 10px'
-        }}>
-        </input>
-        <div style={{
-            position: "relative",
-            display: "inline-block",
-        }}>
-          <button onClick={e => {setHideShowDropdown(!hideShowDropdown); console.log(hideShowDropdown)}}
-            style={{
-              height: '50px',
-              width: '80px',
-              backgroundColor: 'white',
-              borderColor: '#6B83FF',
-              borderWidth: '1px'
-            }}>
-              {selectedUnit}
-          </button>
-          <div style={(hideShowDropdown) ? 
-            {display: 'none'} : 
-            {
-              display: 'grid',
-              gridTempleColumns: 'auto',
-              zIndex: 1,
-              position: 'absolute',
-            }}>
-            <button onClick={e => {setSelectedUnit("Hours"); setHideShowDropdown(!hideShowDropdown);}}
-            style={(selectedUnit === 'Hours') ? {
-              height: '50px',
-              width: '80px',
-              backgroundColor: '#EAEAEA',
-              borderColor: '#6B83FF',
-              borderWidth: '0px 1px 0px 1px'
-            } : 
-            { 
-              height: '50px',
-              width: '80px',
-              backgroundColor: 'white',
-              borderColor: '#6B83FF',
-              borderWidth: '0px 1px 0px 1px'}}
-            >Hours</button>
-            <button onClick={e => {setSelectedUnit("Days"); setHideShowDropdown(!hideShowDropdown);}}
-              style={(selectedUnit === 'Days') ? {
+        <p>{`${ (medicationData.activeIngredients[0].dosage_unit === "") ? `${medicationData.activeIngredients[0].strength} ${medicationData.activeIngredients[0].strength_unit}` : `${medicationData.activeIngredients[0].dosage_unit} ${medicationData.activeIngredients[0].dosage_value}`}` + ` ${(userID) ? "every" : ""} `}</p>
+        {(userID) ? <div>
+          <input onChange={e => setAmountOfTime(e.target.value)} placeholder='12' type='number'
+          style={{
+            height: '50px',
+            width: '40px',
+            fontSize: 16,
+            borderColor: '#6B83FF',
+            borderWidth: '1px',
+            margin: '0px 10px 0px 10px'
+          }}>
+          </input>
+          <div style={{
+              position: "relative",
+              display: "inline-block",
+          }}>
+            <button onClick={e => {setHideShowDropdown(!hideShowDropdown); console.log(hideShowDropdown)}}
+              style={{
+                height: '50px',
+                width: '80px',
+                backgroundColor: 'white',
+                borderColor: '#6B83FF',
+                borderWidth: '1px'
+              }}>
+                {selectedUnit}
+            </button>
+            <div style={(hideShowDropdown) ? 
+              {display: 'none'} : 
+              {
+                display: 'grid',
+                gridTempleColumns: 'auto',
+                zIndex: 1,
+                position: 'absolute',
+              }}>
+              <button onClick={e => {setSelectedUnit("Hours"); setHideShowDropdown(!hideShowDropdown);}}
+              style={(selectedUnit === 'Hours') ? {
                 height: '50px',
                 width: '80px',
                 backgroundColor: '#EAEAEA',
@@ -266,26 +231,44 @@ const MedicalInfo = () => {
                 backgroundColor: 'white',
                 borderColor: '#6B83FF',
                 borderWidth: '0px 1px 0px 1px'}}
-            >Days</button>
-            <button onClick={e => {setSelectedUnit("Weeks"); setHideShowDropdown(!hideShowDropdown);}}
-              style={(selectedUnit === 'Weeks') ? {
-                height: '50px',
-                width: '80px',
-                backgroundColor: '#EAEAEA',
-                borderColor: '#6B83FF',
-                borderWidth: '0px 1px 1px 1px'
-              } : 
-              { 
-                height: '50px',
-                width: '80px',
-                backgroundColor: 'white',
-                borderColor: '#6B83FF',
-                borderWidth: '0px 1px 1px 1px'}}
-            >Weeks</button>
+              >Hours</button>
+              <button onClick={e => {setSelectedUnit("Days"); setHideShowDropdown(!hideShowDropdown);}}
+                style={(selectedUnit === 'Days') ? {
+                  height: '50px',
+                  width: '80px',
+                  backgroundColor: '#EAEAEA',
+                  borderColor: '#6B83FF',
+                  borderWidth: '0px 1px 0px 1px'
+                } : 
+                { 
+                  height: '50px',
+                  width: '80px',
+                  backgroundColor: 'white',
+                  borderColor: '#6B83FF',
+                  borderWidth: '0px 1px 0px 1px'}}
+              >Days</button>
+              <button onClick={e => {setSelectedUnit("Weeks"); setHideShowDropdown(!hideShowDropdown);}}
+                style={(selectedUnit === 'Weeks') ? {
+                  height: '50px',
+                  width: '80px',
+                  backgroundColor: '#EAEAEA',
+                  borderColor: '#6B83FF',
+                  borderWidth: '0px 1px 1px 1px'
+                } : 
+                { 
+                  height: '50px',
+                  width: '80px',
+                  backgroundColor: 'white',
+                  borderColor: '#6B83FF',
+                  borderWidth: '0px 1px 1px 1px'}}
+              >Weeks</button>
+            </div>
           </div>
         </div>
+        :
+        ""}
         <button
-          onClick={() => speakText(`Dosage: ${`${ (medicationData.activeIngredients[0].dosage_unit === "") ? `${medicationData.activeIngredients[0].strength} ${medicationData.activeIngredients[0].strength_unit}` : `${medicationData.activeIngredients[0].dosage_unit} ${medicationData.activeIngredients[0].dosage_value}`}`} every ${amountOfTime} ${selectedUnit}`)}
+          onClick={() => speakText(`Dosage: ${`${ (medicationData.activeIngredients[0].dosage_unit === "") ? `${medicationData.activeIngredients[0].strength} ${medicationData.activeIngredients[0].strength_unit}` : `${medicationData.activeIngredients[0].dosage_unit} ${medicationData.activeIngredients[0].dosage_value}`}`} ${(userID) ? `every ${amountOfTime} ${selectedUnit}` : ""}`)}
           style={{
             backgroundColor: '#6b83ff',
             color: 'white',
@@ -301,7 +284,7 @@ const MedicalInfo = () => {
         </div>
       </div>
 
-      <div style={{ marginBottom: '20px' }}>
+      {(userID) ? <div style={{ marginBottom: '20px' }}>
         <h2>Start Taking On</h2>
         <div style={{flexDirection: 'row', display: 'flex'}}>
         <input type="date" onChange={e => setStartDate(e.target.value)}></input>
@@ -330,8 +313,10 @@ const MedicalInfo = () => {
         </button>
         </div>
       </div>
+      :
+      ""}
 
-      <div style={{ marginBottom: '20px' }}>
+      {(userID) ? <div style={{ marginBottom: '20px' }}>
         <h2>Finish Taking On</h2>
         <div style={{flexDirection: 'row', display: 'flex'}}>
         <input type="date" onChange={e => setEndDate(e.target.value)} disabled={takingIndefinitely} value={endDate}></input>
@@ -370,6 +355,8 @@ const MedicalInfo = () => {
         </input>
         <label htmlFor='taking-indefinitely'>Taking Indefinitely</label>
       </div>
+      :
+      ""}
 
       <div style={{ marginBottom: '20px' }}>
         <h2>Interactions</h2>
@@ -429,21 +416,7 @@ const MedicalInfo = () => {
         </button>
         </div>
       </div>
-      <button
-        onClick={handleSetReminder}
-        style={{
-          backgroundColor: '#6b83ff',
-          color: 'white',
-          padding: '10px 20px',
-          border: 'none',
-          borderRadius: '5px',
-          cursor: 'pointer',
-          marginRight: '10px',
-        }}
-      >
-        Set Reminder
-      </button>
-      <button 
+      {(userID) ? <button 
         onClick={handleSave} 
         style={{
           backgroundColor: '#6b83ff',
@@ -456,19 +429,9 @@ const MedicalInfo = () => {
       >
         Save this Medication
       </button>
+      :
+      ""}
       <br/>
-      {savedMedications.length > 0 && ( //right now this just populates below the information --> in the future it would work with the actual saved medications page
-  <div style={{ color: '#f7a1e9', marginTop: '10px' }}>
-    <h3>Saved Medications:</h3>
-    <ul>
-      {savedMedications.map((medication, index) => (
-        <li key={index}>
-          <strong>{medication.name}</strong> - {medication.dosage}
-        </li>
-      ))}
-    </ul>
-  </div>
-)}
     </div>
   );
 };

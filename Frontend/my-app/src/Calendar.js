@@ -5,6 +5,7 @@
  */
 
 import React, { useState, useEffect } from "react";
+import { useNavigate } from 'react-router-dom';
 import { retrieveUserInformation } from "./Firebase-Configurations/firestore.js"
 import { auth } from './Firebase-Configurations/firebaseConfig';
 import "./Calendar.css";
@@ -19,6 +20,7 @@ const Calendar = () => {
   const [currentDateMedications, setCurrentDateMedications] = useState([]);
   const [medicationCache, setMedicaionCache] = useState([]);
   const [showLoadingSchedule, setShowLoadingSchedule] = useState(true); 
+  const navigate = useNavigate();
 
   const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   const frequencyUnitConversion = {"Hours" : 1, "Days" : 24, "Weeks" : 168}
@@ -62,13 +64,20 @@ const Calendar = () => {
   };
 
   useEffect(() => {
+    // Check for the authenticated user
     const unsubscribe = auth.onAuthStateChanged((currentUser) => {
       if (currentUser) {
-        setUserID(currentUser.uid)
+        setUserID(currentUser.uid);
         retrieveMedications(currentUser.uid);
-      } 
+      } else {
+        setUserID(null);  // user is logged out
+        navigate('/login');  // redirect to login for now
+      }
     });
-  }, []);
+
+    return () => unsubscribe(); // cleanup
+  }, [navigate]);
+
 
   const getDaysInMonth = (year, month) => {
     return new Date(year, month + 1, 0).getDate();
