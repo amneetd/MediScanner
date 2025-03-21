@@ -4,6 +4,7 @@ import './index.css';
 import { useNavigate } from 'react-router-dom'; 
 import axios from 'axios';
 import ExtractDinPopup from './ExtractDinPopup';
+import IssueExtractingPopup from './IssueExtractingPopup';
 
 
 const DropzoneComponent = ({ onDrop }) => {
@@ -12,6 +13,7 @@ const DropzoneComponent = ({ onDrop }) => {
   const [showTermsModal, setShowTermsModal] = useState(false);
   const [isTermsAccepted, setIsTermsAccepted] = useState(false);
   const [showWaitPopup, setShowWaitPopup] = useState(false);
+  const [showIssueExtracting, setShowIssueExtracting] = useState(false);
 
 
   const handleDrop = useCallback((acceptedFiles) => {
@@ -41,17 +43,24 @@ const DropzoneComponent = ({ onDrop }) => {
     setShowTermsModal(false); 
     setShowWaitPopup(true)
     console.log('Uploading file:', selectedFile); //copied from handleUpload
-    // try{
-    //   const medicationIdentifier = await axios
-    //   .post("endpoint", {
-    //     "selectedFile" : selectedFile
-    //   })
-    //   console.log(medicationIdentifier)
-    //   setShowWaitPopup(false)
-    // }
-    // catch{
-    //   setShowWaitPopup(false)
-    // }
+    try{
+      const medicationIdentifier = await axios
+      .post("http://127.0.0.1:5001/mediscanner-1ffd7/us-central1/on_request_example", {
+        "selectedFile" : selectedFile
+      })
+      console.log(medicationIdentifier)
+      setShowWaitPopup(false)
+      if(medicationIdentifier.data.slice(0,3) === "DIN" || medicationIdentifier.data.slice(0,3) === "NPN"){
+        navigate('/medicalinfo', { state: medicationIdentifier.data });
+      }
+      else{
+        console.log("can't identify DIN")
+        setShowIssueExtracting(true);
+      }
+    }
+    catch{
+      setShowWaitPopup(false)
+    }
     //navigate('/medicalinfo'); 
   };
 
@@ -96,6 +105,7 @@ const DropzoneComponent = ({ onDrop }) => {
         </button>
       )}
 
+      {showIssueExtracting && <IssueExtractingPopup closePopup={setShowIssueExtracting} resestComponent={setSelectedFile}/>}
 
       {showWaitPopup && <ExtractDinPopup />}
 

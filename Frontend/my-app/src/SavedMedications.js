@@ -7,23 +7,44 @@
 import React, { useState, useEffect } from 'react';
 import { deleteMedication, retrieveUserInformation } from "./Firebase-Configurations/firestore.js"
 import { auth } from './Firebase-Configurations/firebaseConfig';
+import DPDClient from './backend/DPD_Axios.js';
+import LNPHDClient from './backend/NPN_Axios.js'
 
 const SavedMedications = () => {
   const [savedMedications, setSavedMedications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [userID, setUserID] = useState(null);  
 
-  const addMedicationDetails = (medication, index) => {
-    medication["id"] = index;
-    medication["name"] = "Ibuprofen";
-    medication["interactions"] = ["Aspirin", "Blood Thinners", "Alcohol"];
-    medication["sideEffects"] = ["Nausea", "Dizziness", "Stomach pain", "Rash"];
-  }
+
+  const getMedication = async (medID) => {
+    try {
+      if(medID.slice(0, 3) === "DIN"){
+        const client = new DPDClient();
+        const med = await client.getAllInfo(medID.slice(3));
+        return med;
+      }
+      else if(medID.slice(0, 3) === "NPN"){
+        const client = new LNPHDClient();
+        const med = await client.getAllInfo(medID.slice(3));
+        return med;
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
 
   const retrieveMedications = async (id) => {
     try {
       const userInfo = await retrieveUserInformation(id)
-      userInfo.savedMedications.forEach(addMedicationDetails)
+      for(let i = 0; i < userInfo.savedMedications.length; i++){
+        var med = await getMedication(userInfo.savedMedications[i].dIN);
+        userInfo.savedMedications[i]["id"] = i;
+        userInfo.savedMedications[i]["name"] = med.productInfo[0].brand_name;
+        userInfo.savedMedications[i]["dosage"] = `${ (med.activeIngredients[0].dosage_unit === "") ? `${med.activeIngredients[0].strength} ${med.activeIngredients[0].strength_unit}` : `${med.activeIngredients[0].dosage_unit} ${med.activeIngredients[0].dosage_value}`}`;
+        userInfo.savedMedications[i]["interactions"] = ["Aspirin", "Blood Thinners", "Alcohol"];
+        userInfo.savedMedications[i]["sideEffects"] = ["Nausea", "Dizziness", "Stomach pain", "Rash"];
+      }
       setSavedMedications(userInfo.savedMedications)
       setLoading(false);
     } catch (err) {
@@ -39,25 +60,6 @@ const SavedMedications = () => {
         retrieveMedications(currentUser.uid);
       } 
     });
-    const testMeds = [
-      {
-        id: 1,
-        name: "Ibuprofen",
-        dosage: "200mg daily",
-      interactions: ["Aspirin", "Blood Thinners", "Alcohol"],
-      sideEffects: ["Nausea", "Dizziness", "Stomach pain", "Rash"],
-      },
-      {
-        id: 2,
-        name: "z",
-        dosage: "10mg once a week",
-        interactions: ["water", "sun"],
-        sideEffects: ["fatigue", "caffeine"],
-      },
-    ];
-
-    //setSavedMedications(testMeds);
-    //setLoading(false);
 
   }, []);
   const handleDelete = (medicationDeleting) => {
@@ -67,19 +69,8 @@ const SavedMedications = () => {
 
     // update state to remove med using id (change if it's stored differently)
     setSavedMedications((prev) => prev.filter((medication) => medication.id !== medicationDeleting.id));
-    deleteMedication(userID, medicationDeleting.dosage, medicationDeleting.endDate, medicationDeleting.frequency, medicationDeleting.frequencyUnit, medicationDeleting.startDate, medicationDeleting.dIN);
+    deleteMedication(userID, medicationDeleting.endDate, medicationDeleting.frequency, medicationDeleting.frequencyUnit, medicationDeleting.startDate, medicationDeleting.dIN);
     // api call to delete
-    /*
-    axios
-      .delete(``)
-      .then(() => {
-        setSavedMedications((prev) => prev.filter((medication) => medication.id !== id));
-      })
-      .catch((error) => {
-        console.error("there was an error deleting this medication:", error);
-        alert("Unable to delete medication at this time.");
-      });
-    */
   };
 
   if (loading) {

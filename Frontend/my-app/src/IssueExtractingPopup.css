@@ -1,0 +1,34 @@
+.issue-extracting-popup{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.issue-extracting-container{
+    height: 50%;
+    width: 50%;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 5px;
+    text-align: center;
+}
+
+.close-button{ 
+    background-color: #6b83ff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    height: 40px;
+    width: 80px;
+    border-radius: 10px;
+}

@@ -35,5 +35,6 @@ class LNPHDClient {
 }
 
 // Example usage:
-const client = new LNPHDClient();
-client.getAllInfo("6006624").then(data => console.log(JSON.stringify(data, null, 4)));
+// const client = new LNPHDClient();
+// client.getAllInfo("6006624").then(data => console.log(JSON.stringify(data, null, 4)));
+export default LNPHDClient;

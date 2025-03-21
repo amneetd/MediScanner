@@ -4,6 +4,9 @@ import axios from 'axios';
 import { saveMedication } from "./Firebase-Configurations/firestore.js"
 import { auth } from './Firebase-Configurations/firebaseConfig';
 import ConfirmMedicationInfo from './ConfirmMedicationInfo.js';
+import { useLocation } from "react-router-dom";
+import DPDClient from './backend/DPD_Axios.js';
+import LNPHDClient from './backend/NPN_Axios.js'
 
 const MedicalInfo = () => {
   const [medicationData, setMedicationData] = useState(null);
@@ -21,6 +24,32 @@ const MedicalInfo = () => {
   const [endTime, setEndTime] = useState(""); 
   const [takingIndefinitely, setTakingIndefinitely] = useState(false);
   const [confirmInfoPopup, setConfirmInfoPopup] = useState(false);  
+  const location = useLocation();
+  const medicationIdentifier = location.state;
+
+
+  const getMedication = async (medID) => {
+    try {
+      if(medID.slice(0, 3) === "DIN"){
+        const client = new DPDClient();
+        const med = await client.getAllInfo(medID.slice(3));
+        med["interactions"] = ["Aspirin", "Blood Thinners", "Alcohol"];
+        med["sideEffects"] = ["Nausea", "Dizziness", "Stomach pain", "Rash"];
+        setMedicationData(med);
+        setLoading(false);
+      }
+      else if(medID.slice(0, 3) === "NPN"){
+        const client = new LNPHDClient();
+        const med = await client.getAllInfo(medID.slice(3));
+        med["interactions"] = ["Aspirin", "Blood Thinners", "Alcohol"];
+        med["sideEffects"] = ["Nausea", "Dizziness", "Stomach pain", "Rash"];
+        setMedicationData(med);
+        setLoading(false);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
 
   useEffect(() => {
@@ -56,15 +85,19 @@ const MedicalInfo = () => {
       dIN: 111123
     };
 
-    setMedicationData(sampleData);
-    setLoading(false);
+    console.log("Identifier: ",medicationIdentifier)
+    if(medicationIdentifier){
+      getMedication("DIN00013803")
+    }
+    //setMedicationData(sampleData);
+    //setLoading(false);
   }, []);
 
 
   const handleConfirmSave = (selectedOption) => {
     if(selectedOption === "Yes"){
       setSavedMedications((prev) => [...prev, medicationData]);
-      saveMedication(userID, medicationData.dosage, (takingIndefinitely) ? "indefinitely" :`${endDate}T${endTime}:00`, amountOfTime, selectedUnit, `${startDate}T${startTime}:00`, medicationData.dIN)
+      saveMedication(userID, (takingIndefinitely) ? "indefinitely" :`${endDate}T${endTime}:00`, amountOfTime, selectedUnit, `${startDate}T${startTime}:00`, medicationIdentifier)
       console.log("Medication saved:", medicationData);
       setConfirmInfoPopup(false);
       alert(`${medicationData.name} has been saved. You can now view it under the 'Saved Medications' tab`);
@@ -150,9 +183,9 @@ const MedicalInfo = () => {
       <div style={{ marginBottom: '20px' }}>
         <h2>Medication Name</h2>
         <div style={{flexDirection: 'row', display: 'flex'}}>
-        <p>{medicationData.name}</p>
+        <p>{medicationData.productInfo[0].brand_name}</p>
         <button
-          onClick={() => speakText(`Medication Name: ${medicationData.name}`)}
+          onClick={() => speakText(`Medication Name: ${medicationData.productInfo[0].brand_name}`)}
           style={{
             backgroundColor: '#6b83ff',
             color: 'white',
@@ -172,7 +205,7 @@ const MedicalInfo = () => {
         <h2>Dosage</h2>
         <div style={{flexDirection: 'row', display: 'flex'}}>
 
-        <p>{medicationData.dosage + " every "}</p>
+        <p>{`${ (medicationData.activeIngredients[0].dosage_unit === "") ? `${medicationData.activeIngredients[0].strength} ${medicationData.activeIngredients[0].strength_unit}` : `${medicationData.activeIngredients[0].dosage_unit} ${medicationData.activeIngredients[0].dosage_value}`}` + " every "}</p>
         <input onChange={e => setAmountOfTime(e.target.value)} placeholder='12' type='number'
         style={{
           width: '40px',
@@ -240,21 +273,6 @@ const MedicalInfo = () => {
                 width: '80px',
                 backgroundColor: '#EAEAEA',
                 borderColor: '#6B83FF',
-                borderWidth: '0px 1px 0px 1px'
-              } : 
-              { 
-                height: '50px',
-                width: '80px',
-                backgroundColor: 'white',
-                borderColor: '#6B83FF',
-                borderWidth: '0px 1px 0px 1px'}}
-            >Weeks</button>
-            <button onClick={e => {setSelectedUnit("Months"); setHideShowDropdown(!hideShowDropdown);}}
-              style={(selectedUnit === 'Months') ? {
-                height: '50px',
-                width: '80px',
-                backgroundColor: '#EAEAEA',
-                borderColor: '#6B83FF',
                 borderWidth: '0px 1px 1px 1px'
               } : 
               { 
@@ -263,11 +281,11 @@ const MedicalInfo = () => {
                 backgroundColor: 'white',
                 borderColor: '#6B83FF',
                 borderWidth: '0px 1px 1px 1px'}}
-            >Months</button>
+            >Weeks</button>
           </div>
         </div>
         <button
-          onClick={() => speakText(`Dosage: ${medicationData.dosage} every ${amountOfTime} ${selectedUnit}`)}
+          onClick={() => speakText(`Dosage: ${`${ (medicationData.activeIngredients[0].dosage_unit === "") ? `${medicationData.activeIngredients[0].strength} ${medicationData.activeIngredients[0].strength_unit}` : `${medicationData.activeIngredients[0].dosage_unit} ${medicationData.activeIngredients[0].dosage_value}`}`} every ${amountOfTime} ${selectedUnit}`)}
           style={{
             backgroundColor: '#6b83ff',
             color: 'white',

@@ -68,7 +68,7 @@ export const registerUser = async (username, email, phoneNumber, password) => {
 }
 
 
-export const updatePrescriptionInstructions = async (userUID, medicationDIN, newDosage, newEndDate, newFrequency, newFrequencyUnit, newStartDate) => {
+export const updatePrescriptionInstructions = async (userUID, medicationDIN, newEndDate, newFrequency, newFrequencyUnit, newStartDate) => {
     const docRef = doc(db, "users", userUID);
     const docSnap = await getDoc(docRef);
     if(docSnap.exists()){
@@ -77,7 +77,6 @@ export const updatePrescriptionInstructions = async (userUID, medicationDIN, new
         console.log(usersMedications)
         console.log(location)
         if(location > -1){
-            usersMedications[location].dosage = newDosage;
             usersMedications[location].endDate = newEndDate;
             usersMedications[location].frequency = newFrequency;
             usersMedications[location].frequencyUnit = newFrequencyUnit;
@@ -93,19 +92,18 @@ export const updatePrescriptionInstructions = async (userUID, medicationDIN, new
 }
 
 
-export const saveMedication = async (userUID, dose, finishDate, howOften, timeUnit, beginOn, drugIDNum) => {
+export const saveMedication = async (userUID, finishDate, howOften, timeUnit, beginOn, drugIDNum) => {
     const docRef = doc(db, "users", userUID);
     const docSnap = await getDoc(docRef);
     if(docSnap.exists()){
         const usersMedications = docSnap.data().savedMedications;
         const location = usersMedications.findIndex(medication => medication.dIN === drugIDNum);
         if(location > -1){
-            updatePrescriptionInstructions(userUID, drugIDNum, dose, finishDate, howOften, timeUnit, beginOn);
+            updatePrescriptionInstructions(userUID, drugIDNum, finishDate, howOften, timeUnit, beginOn);
         }
         else{
             await updateDoc(docRef, {
                 savedMedications: arrayUnion({
-                    dosage: dose,
                     endDate: finishDate,
                     frequency: Number(howOften),
                     frequencyUnit: timeUnit,
@@ -118,14 +116,13 @@ export const saveMedication = async (userUID, dose, finishDate, howOften, timeUn
 }
 
 
-export const deleteMedication = async (userUID, dose, finishDate, howOften, timeUnit, beginOn, DrugIDNum) => {
+export const deleteMedication = async (userUID, finishDate, howOften, timeUnit, beginOn, DrugIDNum) => {
     const docRef = doc(db, "users", userUID);
     const docSnap = await getDoc(docRef);
     console.log(docSnap.data())
-    console.log(userUID, dose, finishDate, howOften, beginOn, DrugIDNum)
+    console.log(userUID, finishDate, howOften, beginOn, DrugIDNum)
     await updateDoc(docRef, {
         savedMedications: arrayRemove({
-            dosage: dose,
             endDate: finishDate,
             frequency: howOften,
             frequencyUnit: timeUnit,
