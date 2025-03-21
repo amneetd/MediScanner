@@ -51,7 +51,6 @@ const UserProfile = () => {
         <p style={styles.info}>Phone: {user.phone}</p>
         <br />
         <div style={styles.buttons}>
-          <button style={styles.button}>Edit Profile</button>
           <button style={styles.buttonLogout} onClick={handleLogout}>Log Out</button>
         </div>
       </div>
