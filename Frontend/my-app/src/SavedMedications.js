@@ -5,6 +5,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { deleteMedication, retrieveUserInformation } from "./Firebase-Configurations/firestore.js"
 import { auth } from './Firebase-Configurations/firebaseConfig';
 import DPDClient from './backend/DPD_Axios.js';
@@ -14,6 +15,7 @@ const SavedMedications = () => {
   const [savedMedications, setSavedMedications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [userID, setUserID] = useState(null);  
+  const navigate = useNavigate();
 
 
   const getMedication = async (medID) => {
@@ -52,16 +54,23 @@ const SavedMedications = () => {
     }
   };
 
-  useEffect(() => {
 
+  useEffect(() => {
+    // Check for the authenticated user
     const unsubscribe = auth.onAuthStateChanged((currentUser) => {
       if (currentUser) {
-        setUserID(currentUser.uid)
+        setUserID(currentUser.uid);
         retrieveMedications(currentUser.uid);
-      } 
+      } else {
+        setUserID(null);  // user is logged out
+        navigate('/login');  // redirect to login for now
+      }
     });
+  
+    return () => unsubscribe(); // cleanup
+  }, [navigate]);
 
-  }, []);
+
   const handleDelete = (medicationDeleting) => {
     // Confirmation dialog
     const confirmed = window.confirm("Are you sure you want to delete this medication from your profile?");
