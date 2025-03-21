@@ -53,5 +53,6 @@ class DPDClient {
 }
 
 // Example usage:
-const client = new DPDClient();
-client.getAllInfo("00559407").then(data => console.log(JSON.stringify(data, null, 4)));
+// const client = new DPDClient();
+// client.getAllInfo("00559407").then(data => console.log(JSON.stringify(data, null, 4)));
+export default DPDClient;
