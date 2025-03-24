@@ -5,8 +5,7 @@ body, html {
   height: 100%;
   min-height: 100%;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -19,16 +18,15 @@ body, html {
 
 header {
   text-align: center;
-  margin-bottom: 0;
-  padding-bottom: 15px;
+  padding: 15px;
   position: relative;
-  padding-top: 15px;
+  width: 100%;
 }
 
 header:after {
   content: "";
   display: block;
-  width: 100%;
+  width: 100vw;  /* Full viewport width */
   height: 4px;
   background-color: #6b83ff;
   position: absolute;
@@ -41,6 +39,7 @@ h1 {
   margin: 0;
 }
 
+/* Split sections */
 .split-sections {
   display: flex;
   flex: 1;
@@ -50,8 +49,7 @@ h1 {
 .left-section, .right-section {
   flex: 1;
   padding: 20px;
-  height: 100%;
-  height: 524px;
+  height: auto;
 }
 
 .left-section {
@@ -60,20 +58,25 @@ h1 {
 
 .right-section {
   background-color: #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 h2 {
   margin-top: 0;
+  font-size: 1.5rem;
 }
 
 footer {
   text-align: center;
-  padding: 3px;
+  padding: 10px;
   background-color: #333;
   color: white;
   margin-top: auto; 
 }
 
+/* Dropzone */
 .dropzone- {
   display: flex;
   justify-content: center;
@@ -84,159 +87,54 @@ footer {
   background-color: #f9f9f9;
   color: #666;
   cursor: pointer;
-  margin-left: 130px;
-  margin-top: 50px;
+  margin: 50px auto;
 }
 
-.dropzone-active {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 350px;
-  height: 350px;
-  border: 2px dashed #999;
-  background-color: #6b83ff;
-  color: #666;
-  margin-left: 130px;
-  margin-top: 50px;
-}
-
-
-
-.dropzone- p {
-  margin: 0;
-  font-size: 1.2rem;
-  text-align: center;
-}
-
-.file-info {
-  margin-top: 10px;
-  font-size: 1rem;
-  color: #333;
-}
-
-.upload-button {
-  margin-top: 15px;
-  padding: 10px 20px;
-  background-color: #6b83ff;
-  color: white;
+/* Buttons */
+.upload-button, .loginButton, .registerButton {
+  width: 100%;
+  max-width: 334px;
+  padding: 15px;
+  border-radius: 15px;
   border: none;
-  border-radius: 5px;
+  font-size: 1rem;
+  color: white;
+  background-color: #6b83ff;
   cursor: pointer;
+  transition: background 0.3s;
 }
 
-.upload-button:hover {
+.upload-button:hover, .loginButton:hover, .registerButton:hover {
   background-color: #4f6cfb;
 }
 
+/* Login Box */
 .login-box {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 20px 0;
+  width: 100%;
 }
 
 .login-box input {
-  margin-top: 35px;
-  width: 300px;
-  font-size: 1.0rem; 
-  padding: 15px; 
-  border-radius: 15px;
+  width: 100%;
+  max-width: 300px;
+  font-size: 1rem;
+  padding: 12px;
+  border-radius: 8px;
   border: 1px solid #ccc;
-}
-
-.login-box input#username {
-  width: 300px;
-  margin-top: 120px;
-  font-size: 1.0rem; 
-  padding: 15px; 
-}
-
-.login-box input::placeholder {
-  font-style: italic; 
-}
-
-.login-back {
-  width: 400px;
-  height: 500px;
-  background-color: #666;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  border-radius: 15px;
-}
-
-.login-back2 {
-  width: 400px;
-  height: 580px;
-  background-color: #666;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  border-radius: 15px;
 }
 
 .eye-icon {
+  position: absolute;
   right: 10px;
-  transform: translateY(-35px) translateX(130px);
+  top: 50%;
+  transform: translateY(-50%);
   cursor: pointer;
-  color: #666;
   font-size: 1.2rem;
 }
 
-.create-account-link {
-  color: white;                
-  text-decoration: underline;   
-  cursor: pointer;              
-  font-weight: bold;            
-}
-
-.create-account-link:hover {
-  color: #4f6cfb;              
-  text-decoration: none;        
-}
-
-.registerButton {
-  padding: 15px 10px;
-  width: 334px;
-  border-radius: 15px;
-  border: 1px solid #6b83ff;
-  font-size: 1.0rem; 
-  color: white;
-  background-color: #6b83ff;
-  transform: translateY(-10px);  
-
-}
-
-.loginButton {
-  margin-top: 35px;
-  padding: 15px 20px;
-  width: 334px;
-  border-radius: 15px;
-  border: 1px solid #6b83ff;
-  font-size: 1.0rem; 
-  color: white;
-  background-color: #6b83ff;
-}
-
-.login-box button:hover {
-  background-color: #4f6cfb;
-  border: 1px solid #ccc;
-  cursor: pointer;
-}
-
-.confirmPassword-Box {
-  transform: translateY(-18px);  
-}
-
-.eye-icon2 {
-  right: 10px;
-  transform: translateY(-36px) translateX(130px);
-  cursor: pointer;
-  color: #666;
-  font-size: 1.2rem;
-}
-
+/* Modal Styling */
 .terms-modal {
   position: fixed;
   top: 0;
@@ -259,16 +157,70 @@ footer {
   text-align: center;
 }
 
-.terms-content h2 {
-  margin-bottom: 20px;
-}
+/* 🍏 iPhone-Specific Responsive Styles */
+@media (max-width: 430px) {
+  .mid-container {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
 
-.modal-buttons {
-  margin-top: 20px;
-}
+  .split-sections {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
 
-.modal-buttons button {
-  margin: 0 10px;
-  padding: 10px 20px;
-  font-size: 16px;
+  .left-section, .right-section {
+    width: 90%;
+    max-width: 400px;
+    padding: 15px;
+    text-align: center;
+  }
+
+  h1 {
+    font-size: 1.8rem;
+  }
+
+  h2 {
+    font-size: 1.4rem;
+  }
+
+  .dropzone- {
+    width: 90%;
+    max-width: 300px;
+    height: 250px;
+  }
+
+  .upload-button, .loginButton, .registerButton {
+    font-size: 0.9rem;
+    width: 90%;
+    max-width: 280px;
+  }
+
+  .login-box {
+    width: 90%;
+    max-width: 350px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .login-box input {
+    width: 100%;
+    max-width: 280px;
+  }
+
+  .login-back, .login-back2 {
+    width: 90%;
+    max-width: 350px;
+    height: auto;
+    padding: 20px;
+    text-align: center;
+  }
+
+  /* Make sure the blue line spans the full screen width */
+  header:after {
+    width: 100%;
+  }
 }
