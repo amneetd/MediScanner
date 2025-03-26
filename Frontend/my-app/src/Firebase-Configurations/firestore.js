@@ -50,7 +50,7 @@ export const createNewDocument = async (userUID) => {
 }
 
 
-export const registerUser = async (username, email, phoneNumber, password) => {
+export const registerUser = async (username, email, password) => {
     const auth = getAuth();
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
