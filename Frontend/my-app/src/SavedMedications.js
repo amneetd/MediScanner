@@ -44,8 +44,14 @@ const SavedMedications = () => {
         userInfo.savedMedications[i]["id"] = i;
         userInfo.savedMedications[i]["name"] = med.productInfo[0].brand_name;
         userInfo.savedMedications[i]["dosage"] = `${ (med.activeIngredients[0].dosage_unit === "") ? `${med.activeIngredients[0].strength} ${med.activeIngredients[0].strength_unit}` : `${med.activeIngredients[0].dosage_unit} ${med.activeIngredients[0].dosage_value}`}`;
-        userInfo.savedMedications[i]["interactions"] = ["Aspirin", "Blood Thinners", "Alcohol"];
-        userInfo.savedMedications[i]["sideEffects"] = ["Nausea", "Dizziness", "Stomach pain", "Rash"];
+
+
+        const medInformation = { "Drug Name": "TYLENOL LIQUID GELS", "Active Ingredient(s) & Strength": "Acetaminophen 325 mg", "Indications": "Temporary relief of mild to moderate pain and reduction of fever associated with conditions such as headache, muscle pain, arthritis pain, backache, toothache, menstrual cramps, and colds and flu", "Common Side Effects": [ "Nausea", "Vomiting", "Constipation", "Headache", "Drowsiness" ], "Serious Side Effects": [ "Severe skin reactions (e.g., Stevens-Johnson syndrome, toxic epidermal necrolysis)", "Liver damage or failure", "Allergic reactions (e.g., rash, itching, swelling, severe dizziness, difficulty breathing)" ], "Contraindications": [ "Hypersensitivity to acetaminophen or any ingredients in the formulation", "Severe liver disease" ], "Warnings & Precautions": [ "Do not exceed recommended dose", "Alcohol users should consult a doctor before use", "Use caution in patients with liver or kidney disease", "Not recommended for use during pregnancy or breastfeeding without consulting a healthcare professional", "May cause drowsiness; use caution when driving or operating machinery" ], "Drug Interactions": [ "Other acetaminophen-containing products", "Alcohol", "Warfarin", "Carbamazepine", "Isoniazid" ] }
+
+
+        userInfo.savedMedications[i]["interactions"] = medInformation["Drug Interactions"];
+        userInfo.savedMedications[i]["sideEffects"] = [...medInformation["Common Side Effects"], ...medInformation["Serious Side Effects"]];
+        userInfo.savedMedications[i]["warnings"] = medInformation["Warnings & Precautions"];
       }
       setSavedMedications(userInfo.savedMedications)
       setLoading(false);
@@ -117,6 +123,12 @@ const SavedMedications = () => {
             <ul>
               {medication.sideEffects.map((effect, index) => (
                 <li key={index}>{effect|| "Unknown"}</li>
+              ))}
+            </ul>
+            <p><strong>Warnings:</strong></p>
+            <ul>
+              {medication.warnings.map((warning, index) => (
+                <li key={index}>{warning|| "Unknown"}</li>
               ))}
             </ul>
             <button
