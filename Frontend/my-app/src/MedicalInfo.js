@@ -33,8 +33,14 @@ const MedicalInfo = () => {
       if(medID.slice(0, 3) === "DIN"){
         const client = new DPDClient();
         const med = await client.getAllInfo(medID.slice(3));
-        med["interactions"] = ["Aspirin", "Blood Thinners", "Alcohol"];
-        med["sideEffects"] = ["Nausea", "Dizziness", "Stomach pain", "Rash"];
+
+
+        const medInformation = { "Drug Name": "TYLENOL LIQUID GELS", "Active Ingredient(s) & Strength": "Acetaminophen 325 mg", "Indications": "Temporary relief of mild to moderate pain and reduction of fever associated with conditions such as headache, muscle pain, arthritis pain, backache, toothache, menstrual cramps, and colds and flu", "Common Side Effects": [ "Nausea", "Vomiting", "Constipation", "Headache", "Drowsiness" ], "Serious Side Effects": [ "Severe skin reactions (e.g., Stevens-Johnson syndrome, toxic epidermal necrolysis)", "Liver damage or failure", "Allergic reactions (e.g., rash, itching, swelling, severe dizziness, difficulty breathing)" ], "Contraindications": [ "Hypersensitivity to acetaminophen or any ingredients in the formulation", "Severe liver disease" ], "Warnings & Precautions": [ "Do not exceed recommended dose", "Alcohol users should consult a doctor before use", "Use caution in patients with liver or kidney disease", "Not recommended for use during pregnancy or breastfeeding without consulting a healthcare professional", "May cause drowsiness; use caution when driving or operating machinery" ], "Drug Interactions": [ "Other acetaminophen-containing products", "Alcohol", "Warfarin", "Carbamazepine", "Isoniazid" ] }
+
+
+        med["interactions"] = medInformation["Drug Interactions"];
+        med["sideEffects"] = [...medInformation["Common Side Effects"], ...medInformation["Serious Side Effects"]];
+        med["warnings"] = medInformation["Warnings & Precautions"];
         setMedicationData(med);
         setLoading(false);
       }
