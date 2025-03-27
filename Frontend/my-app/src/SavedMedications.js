@@ -10,6 +10,8 @@ import { deleteMedication, retrieveUserInformation } from "./Firebase-Configurat
 import { auth } from './Firebase-Configurations/firebaseConfig';
 import DPDClient from './backend/DPD_Axios.js';
 import LNPHDClient from './backend/NPN_Axios.js'
+import MedicationSources from './MedicationSources.js';
+import { retrieveMonograph } from './Monograph.js';
 
 const SavedMedications = () => {
   const [savedMedications, setSavedMedications] = useState([]);
@@ -45,13 +47,12 @@ const SavedMedications = () => {
         userInfo.savedMedications[i]["name"] = med.productInfo[0].brand_name;
         userInfo.savedMedications[i]["dosage"] = `${ (med.activeIngredients[0].dosage_unit === "") ? `${med.activeIngredients[0].strength} ${med.activeIngredients[0].strength_unit}` : `${med.activeIngredients[0].dosage_unit} ${med.activeIngredients[0].dosage_value}`}`;
 
-
-        const medInformation = { "Drug Name": "TYLENOL LIQUID GELS", "Active Ingredient(s) & Strength": "Acetaminophen 325 mg", "Indications": "Temporary relief of mild to moderate pain and reduction of fever associated with conditions such as headache, muscle pain, arthritis pain, backache, toothache, menstrual cramps, and colds and flu", "Common Side Effects": [ "Nausea", "Vomiting", "Constipation", "Headache", "Drowsiness" ], "Serious Side Effects": [ "Severe skin reactions (e.g., Stevens-Johnson syndrome, toxic epidermal necrolysis)", "Liver damage or failure", "Allergic reactions (e.g., rash, itching, swelling, severe dizziness, difficulty breathing)" ], "Contraindications": [ "Hypersensitivity to acetaminophen or any ingredients in the formulation", "Severe liver disease" ], "Warnings & Precautions": [ "Do not exceed recommended dose", "Alcohol users should consult a doctor before use", "Use caution in patients with liver or kidney disease", "Not recommended for use during pregnancy or breastfeeding without consulting a healthcare professional", "May cause drowsiness; use caution when driving or operating machinery" ], "Drug Interactions": [ "Other acetaminophen-containing products", "Alcohol", "Warfarin", "Carbamazepine", "Isoniazid" ] }
-
-
+        const medInformation = await retrieveMonograph(userInfo.savedMedications[i].dIN.slice(3), userInfo.savedMedications[i].dIN.slice(0, 3))
+        console.log(medInformation)
         userInfo.savedMedications[i]["interactions"] = medInformation["Drug Interactions"];
         userInfo.savedMedications[i]["sideEffects"] = [...medInformation["Common Side Effects"], ...medInformation["Serious Side Effects"]];
         userInfo.savedMedications[i]["warnings"] = medInformation["Warnings & Precautions"];
+        userInfo.savedMedications[i]["sources"] = medInformation["sources"];
       }
       setSavedMedications(userInfo.savedMedications)
       setLoading(false);
@@ -89,7 +90,7 @@ const SavedMedications = () => {
   };
 
   if (loading) {
-    return <p>Loading your saved medications...</p>;
+    return <p>Loading your saved medications, this can take a minute...</p>;
   }
 
   if (savedMedications.length === 0) {
@@ -131,6 +132,7 @@ const SavedMedications = () => {
                 <li key={index}>{warning|| "Unknown"}</li>
               ))}
             </ul>
+            <MedicationSources sources={medication.sources}/>
             <button
               onClick={() => handleDelete(medication)}
               style={{
