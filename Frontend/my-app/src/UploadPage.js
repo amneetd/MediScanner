@@ -6,7 +6,7 @@ import { db, auth } from "./Firebase-Configurations/firebaseConfig.js"
 
 const UploadPage = () => {
   //RaspberryPi IP address
-  const triggerUrl = 'http://192.168.7.42:5002/trigger';
+  const triggerUrl = 'http://10.13.66.50:5002/trigger';
 
   const handleGetPhotos = async () => {
     try {

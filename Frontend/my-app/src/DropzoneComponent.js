@@ -8,27 +8,20 @@ import IssueExtractingPopup from './IssueExtractingPopup';
 
 
 const DropzoneComponent = ({ onDrop }) => {
-  const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedFile, setSelectedFile] = useState([null]);
   const navigate = useNavigate();
   const [showTermsModal, setShowTermsModal] = useState(false);
   const [isTermsAccepted, setIsTermsAccepted] = useState(false);
   const [showWaitPopup, setShowWaitPopup] = useState(false);
   const [showIssueExtracting, setShowIssueExtracting] = useState(false);
 
-
+  
   const handleDrop = useCallback((acceptedFiles) => {
-    const file = acceptedFiles[0]; //Restricts to one file
+    const file = acceptedFiles[0];
     if (file) {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onloadend = function() {
-          const data = reader.result;
-          setSelectedFile(data);
-      }
-      //setSelectedFile(file);
-      onDrop(file);
+      setSelectedFile(file); // Save raw file object only
     }
-  }, [onDrop]);
+  }, []);
 
   const handleUpload = () => {
     if (selectedFile) {
@@ -40,31 +33,36 @@ const DropzoneComponent = ({ onDrop }) => {
 
   const handleAcceptTerms = async () => {
     setIsTermsAccepted(true);
-    setShowTermsModal(false); 
-    setShowWaitPopup(true)
-    const fileAsString = selectedFile.split(",")[1];
-    var utf8EncodeText = new TextEncoder();
-    var bytes = utf8EncodeText.encode(fileAsString);
-    console.log('Uploading file:', bytes); //copied from handleUpload
-    try{
-      const medicationIdentifier = await axios
-      .post("https://ocr-api-768763807243.us-central1.run.app/ocr/", {
-        "selectedFile" : bytes
-      })
-      console.log(medicationIdentifier)
-      setShowWaitPopup(false)
-      if(medicationIdentifier.data.slice(0,3) === "DIN" || medicationIdentifier.data.slice(0,3) === "NPN"){
-        navigate('/medicalinfo', { state: medicationIdentifier.data });
-      }
-      else{
-        console.log("can't identify DIN")
+    setShowTermsModal(false);
+    setShowWaitPopup(true);
+  
+    try {
+      const formData = new FormData();
+      formData.append('file', selectedFile); // Send as FormData
+  
+      const response = await axios.post(
+        "https://ocr-api-768763807243.us-central1.run.app/ocr/",
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+  
+      console.log("Backend Response:", response);
+      setShowWaitPopup(false);
+      const result = response.data.code 
+      if (result.startsWith("DIN") || result.startsWith("NPN")) {
+        navigate('/medicalinfo', { state: response.data });
+      } else {
         setShowIssueExtracting(true);
       }
+    } catch (error) {
+      console.error("Upload failed:", error);
+      setShowWaitPopup(false);
+      setShowIssueExtracting(true);
     }
-    catch{
-      setShowWaitPopup(false)
-    }
-    //navigate('/medicalinfo'); 
   };
 
   const handleRejectTerms = () => {
