@@ -8,7 +8,7 @@ import IssueExtractingPopup from './IssueExtractingPopup';
 
 
 const DropzoneComponent = ({ onDrop }) => {
-  const [selectedFile, setSelectedFile] = useState([null]);
+  const [selectedFile, setSelectedFile] = useState([]);
   const navigate = useNavigate();
   const [showTermsModal, setShowTermsModal] = useState(false);
   const [isTermsAccepted, setIsTermsAccepted] = useState(false);
@@ -17,14 +17,13 @@ const DropzoneComponent = ({ onDrop }) => {
 
   
   const handleDrop = useCallback((acceptedFiles) => {
-    const file = acceptedFiles[0];
-    if (file) {
-      setSelectedFile(file); // Save raw file object only
+    if (acceptedFiles.length > 0&& acceptedFiles[0].name) {
+      setSelectedFile(acceptedFiles); // Set array of files
     }
   }, []);
 
   const handleUpload = () => {
-    if (selectedFile) {
+    if (selectedFile.length>0) {
       //console.log('Uploading file:', selectedFile);
       setShowTermsModal(true);
       //navigate('/medicalinfo');
@@ -38,7 +37,12 @@ const DropzoneComponent = ({ onDrop }) => {
   
     try {
       const formData = new FormData();
-      formData.append('file', selectedFile); // Send as FormData
+      selectedFile.forEach((file, index) => {
+        formData.append('file', file);
+      });
+
+      console.log([...formData.entries()]);
+
   
       const response = await axios.post(
         "https://ocr-api-768763807243.us-central1.run.app/ocr/",
@@ -71,11 +75,12 @@ const DropzoneComponent = ({ onDrop }) => {
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ 
     onDrop: handleDrop,
-    maxFiles: 1,
-    disabled: !!selectedFile 
+    maxFiles: 10,
+    disabled: selectedFile.length > 0,
+    multiple: true
   });
 
-  const dropzoneClassName = `dropzone-${selectedFile ? 'active' : ''}`;
+  const dropzoneClassName = `dropzone-${selectedFile.length>0 ? 'active' : ''}`;
 
   return (
     <div 
@@ -86,21 +91,21 @@ const DropzoneComponent = ({ onDrop }) => {
       }}
     >
       <input {...getInputProps()} />
-      {!selectedFile && (
+      {selectedFile.length === 0 && (
         isDragActive ? 
         <p>Drop the file here...</p> :
         <p>Drag and drop your image here, or click to select files</p>
       )}
 
-      {selectedFile && (
+      {selectedFile.length>0 && (
         <div className="file-info">
           <p>Selected File: 
             <br/>
-            {selectedFile.name}</p>
+            {selectedFile.length > 0 && selectedFile[0].name}</p>
         </div>
       )}
 
-      {selectedFile && (
+      {selectedFile.length>0 && (
         <button className="upload-button" onClick={handleUpload}>
           Upload this file
         </button>
@@ -140,3 +145,4 @@ If you choose to provide personal information (e.g. saving data, creating an acc
 };
 
 export default DropzoneComponent;
+
