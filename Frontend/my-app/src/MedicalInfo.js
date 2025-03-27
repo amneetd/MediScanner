@@ -7,6 +7,7 @@ import ConfirmMedicationInfo from './ConfirmMedicationInfo.js';
 import { useLocation } from "react-router-dom";
 import DPDClient from './backend/DPD_Axios.js';
 import LNPHDClient from './backend/NPN_Axios.js'
+import { retrieveMonograph } from './Monograph.js';
 
 const MedicalInfo = () => {
   const [medicationData, setMedicationData] = useState(null);
@@ -26,6 +27,17 @@ const MedicalInfo = () => {
   const [confirmInfoPopup, setConfirmInfoPopup] = useState(false);  
   const location = useLocation();
   const medicationIdentifier = location.state;
+  const [totalShowing, setTotalShowing] = useState(4); 
+
+
+  const setHideSources = () => {
+    if(totalShowing === 4){
+      setTotalShowing(medicationData.sources.length)
+    }
+    else{
+      setTotalShowing(4)
+    }
+  }
 
 
   const getMedication = async (medID) => {
@@ -33,22 +45,23 @@ const MedicalInfo = () => {
       if(medID.slice(0, 3) === "DIN"){
         const client = new DPDClient();
         const med = await client.getAllInfo(medID.slice(3));
-
-
-        const medInformation = { "Drug Name": "TYLENOL LIQUID GELS", "Active Ingredient(s) & Strength": "Acetaminophen 325 mg", "Indications": "Temporary relief of mild to moderate pain and reduction of fever associated with conditions such as headache, muscle pain, arthritis pain, backache, toothache, menstrual cramps, and colds and flu", "Common Side Effects": [ "Nausea", "Vomiting", "Constipation", "Headache", "Drowsiness" ], "Serious Side Effects": [ "Severe skin reactions (e.g., Stevens-Johnson syndrome, toxic epidermal necrolysis)", "Liver damage or failure", "Allergic reactions (e.g., rash, itching, swelling, severe dizziness, difficulty breathing)" ], "Contraindications": [ "Hypersensitivity to acetaminophen or any ingredients in the formulation", "Severe liver disease" ], "Warnings & Precautions": [ "Do not exceed recommended dose", "Alcohol users should consult a doctor before use", "Use caution in patients with liver or kidney disease", "Not recommended for use during pregnancy or breastfeeding without consulting a healthcare professional", "May cause drowsiness; use caution when driving or operating machinery" ], "Drug Interactions": [ "Other acetaminophen-containing products", "Alcohol", "Warfarin", "Carbamazepine", "Isoniazid" ] }
-
-
+        const medInformation = await retrieveMonograph(medID.slice(3), "DIN")
         med["interactions"] = medInformation["Drug Interactions"];
         med["sideEffects"] = [...medInformation["Common Side Effects"], ...medInformation["Serious Side Effects"]];
         med["warnings"] = medInformation["Warnings & Precautions"];
+        med["sources"] = medInformation["sources"];
         setMedicationData(med);
+        console.log(medInformation)
         setLoading(false);
       }
       else if(medID.slice(0, 3) === "NPN"){
         const client = new LNPHDClient();
         const med = await client.getAllInfo(medID.slice(3));
-        med["interactions"] = ["Aspirin", "Blood Thinners", "Alcohol"];
-        med["sideEffects"] = ["Nausea", "Dizziness", "Stomach pain", "Rash"];
+        const medInformation = await retrieveMonograph(medID.slice(3), "NPN")
+        console.log(medInformation)
+        med["interactions"] = medInformation["Drug Interactions"];
+        med["sideEffects"] = [...medInformation["Common Side Effects"], ...medInformation["Serious Side Effects"]];
+        med["warnings"] = medInformation["Warnings & Precautions"];
         setMedicationData(med);
         setLoading(false);
       }
@@ -422,6 +435,62 @@ const MedicalInfo = () => {
         </button>
         </div>
       </div>
+
+      <div style={{ marginBottom: '20px' }}>
+        <h2>Warnings</h2>
+        <div style={{flexDirection: 'row', display: 'flex'}}>
+        <ul>
+          {medicationData.warnings.map((warning, index) => (
+            <li key={index}>{warning}</li>
+          ))}
+        </ul>
+        <button
+          onClick={() =>
+            speakText(
+              `Warnings: ${medicationData.warnings.join(', ')}`
+            )
+          }
+          style={{
+            backgroundColor: '#6b83ff',
+            color: 'white',
+            padding: '5px 10px',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: 'pointer',
+            marginLeft: '20px'
+            //fix the button size (make it absolute, not dynamic)
+          }}
+        >
+          Speak Warnings
+        </button>
+        </div>
+      </div>
+
+      <div style={{ marginBottom: '20px' }}>
+        <h2>Sources</h2>
+        <div style={{flexDirection: 'row', display: 'flex'}}>
+        <ul>
+          {medicationData.sources.slice(0, totalShowing).map((source, index) => (
+            <li key={index}>{source}</li>
+          ))}
+        </ul>
+        </div>
+
+        <button 
+        onClick={setHideSources} 
+        style={{
+          backgroundColor: '#6b83ff',
+          color: 'white',
+          padding: '10px 20px',
+          border: 'none',
+          borderRadius: '5px',
+          cursor: 'pointer',
+        }}
+      >
+        {(totalShowing === 4) ? "Show all sources" : "Show less sources"}
+      </button>
+      </div>
+
       {(userID) ? <button 
         onClick={handleSave} 
         style={{
