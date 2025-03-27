@@ -1,12 +1,14 @@
-import React, { useCallback } from 'react';
 import './index.css';
 import DropzoneComponent from './DropzoneComponent';
 import { onAuthStateChanged } from "firebase/auth";
 import { db, auth } from "./Firebase-Configurations/firebaseConfig.js"
+import React, { useState, useCallback } from 'react';
+
 
 const UploadPage = () => {
-  //RaspberryPi IP address
-  const triggerUrl = 'http://192.168.7.42:5002/trigger';
+  // Raspberry Pi trigger URL (make sure the IP/port is correct)
+  const triggerUrl = 'http://10.13.166.50:5002/trigger';
+  const [images, setImages] = useState([]);
 
   const handleGetPhotos = async () => {
     try {
@@ -18,26 +20,23 @@ const UploadPage = () => {
       });
       const data = await response.json();
       console.log('Server response:', data);
-      // You can display a message to the user or update the UI based on the response.
+      if (data.status === 'success') {
+        // Update state with the photo URLs returned from the Raspberry Pi.
+        setImages(data.images);
+      } else {
+        console.error('Error:', data.message);
+      }
     } catch (error) {
       console.error('Error triggering photos:', error);
     }
   };
 
-    const handleDrop = useCallback((acceptedFiles) => {
-        // Handle the uploaded files
-        console.log(acceptedFiles);
-      }, []);
+  const handleDrop = useCallback((acceptedFiles) => {
+    // Handle the uploaded files if needed.
+    console.log(acceptedFiles);
+  }, []);
 
-      onAuthStateChanged(auth, activeUser => {
-        if(activeUser){
-          console.log("login is a success");
-        }
-        else{
-          console.log("user has logged out");
-        }
-      })
-
+  // Render the photos if available.
   return (
     <div className="mid-container">
       <header>
