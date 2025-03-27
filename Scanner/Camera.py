@@ -1,4 +1,5 @@
 import os
+import shutil
 from picamera2 import Picamera2, Preview
 from Phidget22.Devices.DCMotor import DCMotor
 from datetime import datetime
@@ -21,32 +22,30 @@ dc_motor = DCMotor()
 dc_motor.openWaitForAttachment(5000)
 
 # Prepare main output directory
-output_dir = "ScannedPhotos3"
+output_dir = "ScannedMedication"
 os.makedirs(output_dir, exist_ok=True)
 
-# Determine the next medication folder number
-existing_folders = [
-    d for d in os.listdir(output_dir)
-    if os.path.isdir(os.path.join(output_dir, d)) and d.startswith("medication")
-]
-if existing_folders:
-    # Extract numeric part from folder names and find the max number
-    folder_numbers = [int(d.replace("medication", "")) for d in existing_folders if d.replace("medication", "").isdigit()]
-    next_number = max(folder_numbers) + 1 if folder_numbers else 1
-else:
-    next_number = 1
+# Delete all files (and subdirectories) in the output directory
+for filename in os.listdir(output_dir):
+    file_path = os.path.join(output_dir, filename)
+    try:
+        if os.path.isfile(file_path) or os.path.islink(file_path):
+            os.unlink(file_path)  # Remove file or link
+        elif os.path.isdir(file_path):
+            shutil.rmtree(file_path)  # Remove directory and its contents
+    except Exception as e:
+        print(f"Failed to delete {file_path}. Reason: {e}")
 
-# Create the new medication subfolder
-med_folder = os.path.join(output_dir, f"medication{next_number}")
-os.makedirs(med_folder, exist_ok=True)
+# Use the output directory directly (no subfolders)
+med_folder = output_dir
 
-# Capture photos into the medication subfolder
+# Capture photos directly into the output directory
 for i in range(1, num_photos + 1):
-    # Spin
+    # Spin the motor
     dc_motor.setTargetVelocity(0.12)
     time.sleep(spin_time)
 
-    # Stop & capture
+    # Stop the motor and capture photo
     dc_motor.setTargetVelocity(0)
     time.sleep(stop_time)
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")[:-3]
