@@ -42,11 +42,14 @@ const DropzoneComponent = ({ onDrop }) => {
     setIsTermsAccepted(true);
     setShowTermsModal(false); 
     setShowWaitPopup(true)
-    console.log('Uploading file:', selectedFile); //copied from handleUpload
+    const fileAsString = selectedFile.split(",")[1];
+    var utf8EncodeText = new TextEncoder();
+    var bytes = utf8EncodeText.encode(fileAsString);
+    console.log('Uploading file:', bytes); //copied from handleUpload
     try{
       const medicationIdentifier = await axios
-      .post("http://127.0.0.1:5001/mediscanner-1ffd7/us-central1/on_request_example", {
-        "selectedFile" : selectedFile
+      .post("https://ocr-api-768763807243.us-central1.run.app/ocr/", {
+        "selectedFile" : bytes
       })
       console.log(medicationIdentifier)
       setShowWaitPopup(false)
