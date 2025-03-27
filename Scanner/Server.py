@@ -26,4 +26,4 @@ def upload_file():
 
 if __name__ == '__main__':
     # Listen on all interfaces so the Pi can reach the server.
-    app.run(host='0.0.0.0', port=5001)
+    app.run(host='0.0.0.0', port=5002)
