@@ -2,6 +2,9 @@ import React, { useCallback, useState, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 import './index.css';
 import { useNavigate } from 'react-router-dom'; 
+import axios from 'axios';
+import ExtractDinPopup from './ExtractDinPopup';
+import IssueExtractingPopup from './IssueExtractingPopup';
 
 
 const DropzoneComponent = ({ onDrop, images }) => {
@@ -9,31 +12,60 @@ const DropzoneComponent = ({ onDrop, images }) => {
   const navigate = useNavigate();
   const [showTermsModal, setShowTermsModal] = useState(false);
   const [isTermsAccepted, setIsTermsAccepted] = useState(false);
-
-  console.log(images)
+  const [showWaitPopup, setShowWaitPopup] = useState(false);
+  const [showIssueExtracting, setShowIssueExtracting] = useState(false);
 
   const handleDrop = useCallback((acceptedFiles) => {
-    const file = acceptedFiles[0]; //Restricts to one file
-    if (file) {
-      setSelectedFile(file);
-      onDrop(file);
+    if (acceptedFiles.length > 0&& acceptedFiles[0].name) {
+      setSelectedFile(acceptedFiles); // Set array of files
     }
-  }, [onDrop]);
+  }, []);
 
   const handleUpload = () => {
-    if (selectedFile) {
+    if (selectedFile.length>0) {
       //console.log('Uploading file:', selectedFile);
       setShowTermsModal(true);
       //navigate('/medicalinfo');
     }
   };
 
-  const handleAcceptTerms = () => {
+  const handleAcceptTerms = async () => {
     setIsTermsAccepted(true);
-    setShowTermsModal(false); 
+    setShowTermsModal(false);
+    setShowWaitPopup(true);
+  
+    try {
+      const formData = new FormData();
+      selectedFile.forEach((file, index) => {
+        formData.append('file', file);
+      });
 
-    console.log('Uploading file:', selectedFile); //copied from handleUpload
-    navigate('/medicalinfo'); 
+      console.log([...formData.entries()]);
+
+  
+      const response = await axios.post(
+        "https://ocr-api-768763807243.us-central1.run.app/ocr/",
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+  
+      console.log("Backend Response:", response);
+      setShowWaitPopup(false);
+      const result = response.data.code 
+      if (result.startsWith("DIN") || result.startsWith("NPN")) {
+        navigate('/medicalinfo', { state: response.data });
+      } else {
+        setShowIssueExtracting(true);
+      }
+    } catch (error) {
+      console.error("Upload failed:", error);
+      setShowWaitPopup(false);
+      setShowIssueExtracting(true);
+    }
   };
 
   const handleRejectTerms = () => {
@@ -42,11 +74,12 @@ const DropzoneComponent = ({ onDrop, images }) => {
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ 
     onDrop: handleDrop,
-    maxFiles: 1,
-    disabled: !!selectedFile 
+    maxFiles: 10,
+    disabled: selectedFile.length > 0,
+    multiple: true
   });
 
-  const dropzoneClassName = `dropzone-${selectedFile ? 'active' : ''}`;
+  const dropzoneClassName = `dropzone-${selectedFile.length>0 ? 'active' : ''}`;
 
   return (
     <div 
@@ -57,25 +90,29 @@ const DropzoneComponent = ({ onDrop, images }) => {
       }}
     >
       <input {...getInputProps()} />
-      {!selectedFile && (
+      {selectedFile.length === 0 && (
         isDragActive ? 
         <p>Drop the file here...</p> :
         <p>Drag and drop your image here, or click to select files</p>
       )}
 
-      {selectedFile && (
+      {selectedFile.length>0 && (
         <div className="file-info">
           <p>Selected File: 
             <br/>
-            {selectedFile.name}</p>
+            {selectedFile.length > 0 && selectedFile[0].name}</p>
         </div>
       )}
 
-      {selectedFile && (
+      {selectedFile.length>0 && (
         <button className="upload-button" onClick={handleUpload}>
           Upload this file
         </button>
       )}
+
+      {showIssueExtracting && <IssueExtractingPopup closePopup={setShowIssueExtracting} resestComponent={setSelectedFile}/>}
+
+      {showWaitPopup && <ExtractDinPopup />}
 
         {showTermsModal && (
         <div className="terms-modal">
@@ -107,3 +144,4 @@ If you choose to provide personal information (e.g. saving data, creating an acc
 };
 
 export default DropzoneComponent;
+

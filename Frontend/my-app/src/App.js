@@ -27,8 +27,6 @@ const App = () =>{
           <Route path="/saved" element={<SavedMedications/>} />
           <Route path="/me" element={<UserProfile/>} />
           <Route path="/calendar" element={<Calendar/>} />
-          <Route path="/search" element={<Search/>} />
-          <Route path="/reminders" element={<Reminders/>} />
 
         </Routes>
       </div>

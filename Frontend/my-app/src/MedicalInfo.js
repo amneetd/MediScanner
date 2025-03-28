@@ -3,6 +3,11 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { saveMedication } from "./Firebase-Configurations/firestore.js"
 import { auth } from './Firebase-Configurations/firebaseConfig';
+import ConfirmMedicationInfo from './ConfirmMedicationInfo.js';
+import { useLocation } from "react-router-dom";
+import DPDClient from './backend/DPD_Axios.js';
+import LNPHDClient from './backend/NPN_Axios.js'
+import { retrieveMonograph } from './Monograph.js';
 
 const MedicalInfo = () => {
   const [medicationData, setMedicationData] = useState(null);
@@ -18,52 +23,88 @@ const MedicalInfo = () => {
   const [startTime, setStartTime] = useState(null); 
   const [endDate, setEndDate] = useState(""); 
   const [endTime, setEndTime] = useState(""); 
-  const [takingIndefinitely, setTakingIndefinitely] = useState(false); 
+  const [takingIndefinitely, setTakingIndefinitely] = useState(false);
+  const [confirmInfoPopup, setConfirmInfoPopup] = useState(false);  
+  const location = useLocation();
+  const medicationIdentifier = location.state;
+  const [totalShowing, setTotalShowing] = useState(4); 
+
+
+  const setHideSources = () => {
+    if(totalShowing === 4){
+      setTotalShowing(medicationData.sources.length)
+    }
+    else{
+      setTotalShowing(4)
+    }
+  }
+
+
+  const getMedication = async (medID) => {
+    try {
+      if(medID.slice(0, 3) === "DIN"){
+        const client = new DPDClient();
+        const med = await client.getAllInfo(medID.slice(3));
+        const medInformation = await retrieveMonograph(medID.slice(3), "DIN")
+        med["interactions"] = medInformation["Drug Interactions"];
+        med["sideEffects"] = [...medInformation["Common Side Effects"], ...medInformation["Serious Side Effects"]];
+        med["warnings"] = medInformation["Warnings & Precautions"];
+        med["sources"] = medInformation["sources"];
+        setMedicationData(med);
+        console.log(medInformation)
+        setLoading(false);
+      }
+      else if(medID.slice(0, 3) === "NPN"){
+        const client = new LNPHDClient();
+        const med = await client.getAllInfo(medID.slice(3));
+        const medInformation = await retrieveMonograph(medID.slice(3), "NPN")
+        console.log(medInformation)
+        med["interactions"] = medInformation["Drug Interactions"];
+        med["sideEffects"] = [...medInformation["Common Side Effects"], ...medInformation["Serious Side Effects"]];
+        med["warnings"] = medInformation["Warnings & Precautions"];
+        setMedicationData(med);
+        setLoading(false);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
 
   useEffect(() => {
-    //our api endpoint -- I'm assuming this is how we're going to do it
-    //const apiUrl = x;
-
-    //for when we have it integrated properly
-    /*axios
-      .get(apiUrl)
-      .then((response) => {
-        setMedicationData(response.data);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("There was an error fetching the medication data:", error);
-        setError("We were unable to load your medication information.");
-        setLoading(false);
-      });
-  }, []);
-*/
     const unsubscribe = auth.onAuthStateChanged((currentUser) => {
       if (currentUser) {
-        setUserID(currentUser.uid)
-      } 
+        setUserID(currentUser.uid);
+      } else {
+        setUserID(null);  // user is logged out
+      }
     });
 
-    const sampleData = {
-      name: "Ibuprofen",
-      dosage: "400mg",
-      frequency: "weekly",
-      interactions: ["Aspirin", "Blood Thinners", "Alcohol"],
-      sideEffects: ["Nausea", "Dizziness", "Stomach pain", "Rash"],
-      dIN: 111123
-    };
-
-    setMedicationData(sampleData);
-    setLoading(false);
+    console.log("Identifier: ",medicationIdentifier)
+    if(medicationIdentifier){
+      getMedication(medicationIdentifier)
+    }
   }, []);
+
+
+  const handleConfirmSave = (selectedOption) => {
+    if(selectedOption === "Yes"){
+      setSavedMedications((prev) => [...prev, medicationData]);
+      saveMedication(userID, (takingIndefinitely) ? "indefinitely" :`${endDate}T${endTime}:00`, amountOfTime, selectedUnit, `${startDate}T${startTime}:00`, medicationIdentifier)
+      console.log("Medication saved:", medicationData);
+      setConfirmInfoPopup(false);
+      alert(`${medicationData.name} has been saved. You can now view it under the 'Saved Medications' tab`);
+    }
+    else{
+      setConfirmInfoPopup(false);
+    }
+    console.log("handles confirmation of save", selectedOption)
+  }
+
 
   const handleSave = () => {
     if (medicationData && startDate && startTime && (endDate || takingIndefinitely) && (endTime || takingIndefinitely) && selectedUnit !== "Select Unit" && amountOfTime.length > 0) {
-      setSavedMedications((prev) => [...prev, medicationData]);
-      saveMedication(userID, medicationData.dosage, (takingIndefinitely) ? "indefinitely" :`${endDate}T${endTime}:00`, amountOfTime, selectedUnit, `${startDate}T${startTime}:00`, medicationData.dIN)
-      console.log("Medication saved:", medicationData);
-      alert(`${medicationData.name} has been saved. You can now view it under the 'Saved Medications' tab`);
+      setConfirmInfoPopup(true);
     }
     else if(!startDate){
       alert("Please enter a start date for the medication.")
@@ -111,6 +152,10 @@ const MedicalInfo = () => {
     }
   };
 
+  if (!medicationIdentifier) {
+    return <p>No medication scanned.</p>;
+  }
+
   if (loading) {
     return <p>Loading your medical information. Please wait</p>;
   }
@@ -121,15 +166,23 @@ const MedicalInfo = () => {
 
   return (
     <div style={{ fontFamily: 'Arial, sans-serif', padding: '20px' }}>
+      
+      {confirmInfoPopup && <ConfirmMedicationInfo 
+                              startOn={`${startDate} At ${startTime}`} 
+                              endOn={(takingIndefinitely) ? "Taking Indefinitely" : `${endDate} At ${endTime}`} 
+                              frequency={`${amountOfTime} ${selectedUnit}`} 
+                              handleConfirmation={handleConfirmSave}
+                            />}
+
       <h1 style={{ color: '#333' }}>Medical Information</h1>
       <br/>
 
       <div style={{ marginBottom: '20px' }}>
         <h2>Medication Name</h2>
         <div style={{flexDirection: 'row', display: 'flex'}}>
-        <p>{medicationData.name}</p>
+        <p>{medicationData.productInfo[0].brand_name}</p>
         <button
-          onClick={() => speakText(`Medication Name: ${medicationData.name}`)}
+          onClick={() => speakText(`Medication Name: ${medicationData.productInfo[0].brand_name}`)}
           style={{
             backgroundColor: '#6b83ff',
             color: 'white',
@@ -149,55 +202,42 @@ const MedicalInfo = () => {
         <h2>Dosage</h2>
         <div style={{flexDirection: 'row', display: 'flex'}}>
 
-        <p>{medicationData.dosage + " every "}</p>
-        <input onChange={e => setAmountOfTime(e.target.value)} placeholder='12' type='number'
-        style={{
-          width: '40px',
-          fontSize: 16,
-          borderColor: '#6B83FF',
-          borderWidth: '1px',
-          margin: '0px 10px 0px 10px'
-        }}>
-        </input>
-        <div style={{
-            position: "relative",
-            display: "inline-block",
-        }}>
-          <button onClick={e => {setHideShowDropdown(!hideShowDropdown); console.log(hideShowDropdown)}}
-            style={{
-              height: '50px',
-              width: '80px',
-              backgroundColor: 'white',
-              borderColor: '#6B83FF',
-              borderWidth: '1px'
-            }}>
-              {selectedUnit}
-          </button>
-          <div style={(hideShowDropdown) ? 
-            {display: 'none'} : 
-            {
-              display: 'grid',
-              gridTempleColumns: 'auto',
-              zIndex: 1,
-              position: 'absolute',
-            }}>
-            <button onClick={e => {setSelectedUnit("Hours"); setHideShowDropdown(!hideShowDropdown);}}
-            style={(selectedUnit === 'Hours') ? {
-              height: '50px',
-              width: '80px',
-              backgroundColor: '#EAEAEA',
-              borderColor: '#6B83FF',
-              borderWidth: '0px 1px 0px 1px'
-            } : 
-            { 
-              height: '50px',
-              width: '80px',
-              backgroundColor: 'white',
-              borderColor: '#6B83FF',
-              borderWidth: '0px 1px 0px 1px'}}
-            >Hours</button>
-            <button onClick={e => {setSelectedUnit("Days"); setHideShowDropdown(!hideShowDropdown);}}
-              style={(selectedUnit === 'Days') ? {
+        <p>{`${ (medicationData.activeIngredients[0].dosage_unit === "") ? `${medicationData.activeIngredients[0].strength} ${medicationData.activeIngredients[0].strength_unit}` : `${medicationData.activeIngredients[0].dosage_unit} ${medicationData.activeIngredients[0].dosage_value}`}` + ` ${(userID) ? "every" : ""} `}</p>
+        {(userID) ? <div>
+          <input onChange={e => setAmountOfTime(e.target.value)} placeholder='12' type='number'
+          style={{
+            height: '50px',
+            width: '40px',
+            fontSize: 16,
+            borderColor: '#6B83FF',
+            borderWidth: '1px',
+            margin: '0px 10px 0px 10px'
+          }}>
+          </input>
+          <div style={{
+              position: "relative",
+              display: "inline-block",
+          }}>
+            <button onClick={e => {setHideShowDropdown(!hideShowDropdown); console.log(hideShowDropdown)}}
+              style={{
+                height: '50px',
+                width: '80px',
+                backgroundColor: 'white',
+                borderColor: '#6B83FF',
+                borderWidth: '1px'
+              }}>
+                {selectedUnit}
+            </button>
+            <div style={(hideShowDropdown) ? 
+              {display: 'none'} : 
+              {
+                display: 'grid',
+                gridTempleColumns: 'auto',
+                zIndex: 1,
+                position: 'absolute',
+              }}>
+              <button onClick={e => {setSelectedUnit("Hours"); setHideShowDropdown(!hideShowDropdown);}}
+              style={(selectedUnit === 'Hours') ? {
                 height: '50px',
                 width: '80px',
                 backgroundColor: '#EAEAEA',
@@ -210,41 +250,44 @@ const MedicalInfo = () => {
                 backgroundColor: 'white',
                 borderColor: '#6B83FF',
                 borderWidth: '0px 1px 0px 1px'}}
-            >Days</button>
-            <button onClick={e => {setSelectedUnit("Weeks"); setHideShowDropdown(!hideShowDropdown);}}
-              style={(selectedUnit === 'Weeks') ? {
-                height: '50px',
-                width: '80px',
-                backgroundColor: '#EAEAEA',
-                borderColor: '#6B83FF',
-                borderWidth: '0px 1px 0px 1px'
-              } : 
-              { 
-                height: '50px',
-                width: '80px',
-                backgroundColor: 'white',
-                borderColor: '#6B83FF',
-                borderWidth: '0px 1px 0px 1px'}}
-            >Weeks</button>
-            <button onClick={e => {setSelectedUnit("Months"); setHideShowDropdown(!hideShowDropdown);}}
-              style={(selectedUnit === 'Months') ? {
-                height: '50px',
-                width: '80px',
-                backgroundColor: '#EAEAEA',
-                borderColor: '#6B83FF',
-                borderWidth: '0px 1px 1px 1px'
-              } : 
-              { 
-                height: '50px',
-                width: '80px',
-                backgroundColor: 'white',
-                borderColor: '#6B83FF',
-                borderWidth: '0px 1px 1px 1px'}}
-            >Months</button>
+              >Hours</button>
+              <button onClick={e => {setSelectedUnit("Days"); setHideShowDropdown(!hideShowDropdown);}}
+                style={(selectedUnit === 'Days') ? {
+                  height: '50px',
+                  width: '80px',
+                  backgroundColor: '#EAEAEA',
+                  borderColor: '#6B83FF',
+                  borderWidth: '0px 1px 0px 1px'
+                } : 
+                { 
+                  height: '50px',
+                  width: '80px',
+                  backgroundColor: 'white',
+                  borderColor: '#6B83FF',
+                  borderWidth: '0px 1px 0px 1px'}}
+              >Days</button>
+              <button onClick={e => {setSelectedUnit("Weeks"); setHideShowDropdown(!hideShowDropdown);}}
+                style={(selectedUnit === 'Weeks') ? {
+                  height: '50px',
+                  width: '80px',
+                  backgroundColor: '#EAEAEA',
+                  borderColor: '#6B83FF',
+                  borderWidth: '0px 1px 1px 1px'
+                } : 
+                { 
+                  height: '50px',
+                  width: '80px',
+                  backgroundColor: 'white',
+                  borderColor: '#6B83FF',
+                  borderWidth: '0px 1px 1px 1px'}}
+              >Weeks</button>
+            </div>
           </div>
         </div>
+        :
+        ""}
         <button
-          onClick={() => speakText(`Dosage: ${medicationData.dosage} every ${amountOfTime} ${selectedUnit}`)}
+          onClick={() => speakText(`Dosage: ${`${ (medicationData.activeIngredients[0].dosage_unit === "") ? `${medicationData.activeIngredients[0].strength} ${medicationData.activeIngredients[0].strength_unit}` : `${medicationData.activeIngredients[0].dosage_unit} ${medicationData.activeIngredients[0].dosage_value}`}`} ${(userID) ? `every ${amountOfTime} ${selectedUnit}` : ""}`)}
           style={{
             backgroundColor: '#6b83ff',
             color: 'white',
@@ -260,7 +303,7 @@ const MedicalInfo = () => {
         </div>
       </div>
 
-      <div style={{ marginBottom: '20px' }}>
+      {(userID) ? <div style={{ marginBottom: '20px' }}>
         <h2>Start Taking On</h2>
         <div style={{flexDirection: 'row', display: 'flex'}}>
         <input type="date" onChange={e => setStartDate(e.target.value)}></input>
@@ -289,8 +332,10 @@ const MedicalInfo = () => {
         </button>
         </div>
       </div>
+      :
+      ""}
 
-      <div style={{ marginBottom: '20px' }}>
+      {(userID) ? <div style={{ marginBottom: '20px' }}>
         <h2>Finish Taking On</h2>
         <div style={{flexDirection: 'row', display: 'flex'}}>
         <input type="date" onChange={e => setEndDate(e.target.value)} disabled={takingIndefinitely} value={endDate}></input>
@@ -329,6 +374,8 @@ const MedicalInfo = () => {
         </input>
         <label htmlFor='taking-indefinitely'>Taking Indefinitely</label>
       </div>
+      :
+      ""}
 
       <div style={{ marginBottom: '20px' }}>
         <h2>Interactions</h2>
@@ -388,8 +435,49 @@ const MedicalInfo = () => {
         </button>
         </div>
       </div>
-      <button
-        onClick={handleSetReminder}
+
+      <div style={{ marginBottom: '20px' }}>
+        <h2>Warnings</h2>
+        <div style={{flexDirection: 'row', display: 'flex'}}>
+        <ul>
+          {medicationData.warnings.map((warning, index) => (
+            <li key={index}>{warning}</li>
+          ))}
+        </ul>
+        <button
+          onClick={() =>
+            speakText(
+              `Warnings: ${medicationData.warnings.join(', ')}`
+            )
+          }
+          style={{
+            backgroundColor: '#6b83ff',
+            color: 'white',
+            padding: '5px 10px',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: 'pointer',
+            marginLeft: '20px'
+            //fix the button size (make it absolute, not dynamic)
+          }}
+        >
+          Speak Warnings
+        </button>
+        </div>
+      </div>
+
+      <div style={{ marginBottom: '20px' }}>
+        <h2>Sources</h2>
+        <div style={{flexDirection: 'row', display: 'flex'}}>
+        <ul>
+          {medicationData.sources.slice(0, totalShowing).map((source, index) => (
+            <li key={index}>{source}</li>
+          ))}
+        </ul>
+        </div>
+
+        <button 
+        onClick={setHideSources} 
         style={{
           backgroundColor: '#6b83ff',
           color: 'white',
@@ -397,12 +485,13 @@ const MedicalInfo = () => {
           border: 'none',
           borderRadius: '5px',
           cursor: 'pointer',
-          marginRight: '10px',
         }}
       >
-        Set Reminder
+        {(totalShowing === 4) ? "Show all sources" : "Show less sources"}
       </button>
-      <button 
+      </div>
+
+      {(userID) ? <button 
         onClick={handleSave} 
         style={{
           backgroundColor: '#6b83ff',
@@ -415,19 +504,9 @@ const MedicalInfo = () => {
       >
         Save this Medication
       </button>
+      :
+      ""}
       <br/>
-      {savedMedications.length > 0 && ( //right now this just populates below the information --> in the future it would work with the actual saved medications page
-  <div style={{ color: '#f7a1e9', marginTop: '10px' }}>
-    <h3>Saved Medications:</h3>
-    <ul>
-      {savedMedications.map((medication, index) => (
-        <li key={index}>
-          <strong>{medication.name}</strong> - {medication.dosage}
-        </li>
-      ))}
-    </ul>
-  </div>
-)}
     </div>
   );
 };
