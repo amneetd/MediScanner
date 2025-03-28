@@ -2,12 +2,12 @@ import './index.css';
 import DropzoneComponent from './DropzoneComponent';
 import { onAuthStateChanged } from "firebase/auth";
 import { db, auth } from "./Firebase-Configurations/firebaseConfig.js"
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 
 
 const UploadPage = () => {
   // Raspberry Pi trigger URL (make sure the IP/port is correct)
-  const triggerUrl = 'http://10.13.166.50:5002/trigger';
+  const triggerUrl = 'http://10.13.184.123:5002/trigger';
   const [images, setImages] = useState([]);
 
   const handleGetPhotos = async () => {
@@ -20,8 +20,8 @@ const UploadPage = () => {
       });
       const data = await response.json();
       console.log('Server response:', data);
-      if (data.status === 'success') {
-        // Update state with the photo URLs returned from the Raspberry Pi.
+      if (data.status === 'success' && Array.isArray(data.images)) {
+        // Save the image URL array as the state variable "images"
         setImages(data.images);
       } else {
         console.error('Error:', data.message);
@@ -30,6 +30,10 @@ const UploadPage = () => {
       console.error('Error triggering photos:', error);
     }
   };
+
+  useEffect(()=> {
+    console.log(images)
+  }, [images]);
 
   const handleDrop = useCallback((acceptedFiles) => {
     // Handle the uploaded files if needed.
@@ -51,7 +55,7 @@ const UploadPage = () => {
         </div>
         <div className="right-section">
           <h2>Upload Your Image</h2>
-          <DropzoneComponent onDrop={handleDrop} />
+          <DropzoneComponent onDrop={handleDrop} images={images} />
           <button onClick={handleGetPhotos}>Scan Photos</button>
         </div>
       </div>

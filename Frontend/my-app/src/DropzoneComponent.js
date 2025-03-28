@@ -4,12 +4,13 @@ import './index.css';
 import { useNavigate } from 'react-router-dom'; 
 
 
-const DropzoneComponent = ({ onDrop }) => {
+const DropzoneComponent = ({ onDrop, images }) => {
   const [selectedFile, setSelectedFile] = useState(null);
   const navigate = useNavigate();
   const [showTermsModal, setShowTermsModal] = useState(false);
   const [isTermsAccepted, setIsTermsAccepted] = useState(false);
 
+  console.log(images)
 
   const handleDrop = useCallback((acceptedFiles) => {
     const file = acceptedFiles[0]; //Restricts to one file
