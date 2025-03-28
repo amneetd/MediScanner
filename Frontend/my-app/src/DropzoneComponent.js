@@ -5,21 +5,37 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import ExtractDinPopup from './ExtractDinPopup';
 import IssueExtractingPopup from './IssueExtractingPopup';
+import { ImageContext } from './UploadPage';
 
 
-const DropzoneComponent = ({ onDrop, images }) => {
-  const [selectedFile, setSelectedFile] = useState(null);
+const DropzoneComponent = ({images = []}) => {
+  const [selectedFile, setSelectedFile] = useState([]);
   const navigate = useNavigate();
   const [showTermsModal, setShowTermsModal] = useState(false);
   const [isTermsAccepted, setIsTermsAccepted] = useState(false);
   const [showWaitPopup, setShowWaitPopup] = useState(false);
   const [showIssueExtracting, setShowIssueExtracting] = useState(false);
 
+  console.log('testing dropzone component')
+  console.log(images)
+  console.log("image 1", images[0])
+
+  useEffect(() => {
+    if (images && images.length > 0) {
+      setSelectedFile(prevFiles => [...prevFiles, ...images]);
+    }
+  }, [images]);
+
+  console.log("selected file", selectedFile)
+  console.log(selectedFile.length)
+  
   const handleDrop = useCallback((acceptedFiles) => {
     if (acceptedFiles.length > 0&& acceptedFiles[0].name) {
       setSelectedFile(acceptedFiles); // Set array of files
     }
   }, []);
+
+  
 
   const handleUpload = () => {
     if (selectedFile.length>0) {
@@ -90,7 +106,7 @@ const DropzoneComponent = ({ onDrop, images }) => {
       }}
     >
       <input {...getInputProps()} />
-      {selectedFile.length === 0 && (
+      {((selectedFile.length === 0) || (selectedFile.length === undefined)) && (
         isDragActive ? 
         <p>Drop the file here...</p> :
         <p>Drag and drop your image here, or click to select files</p>
@@ -110,7 +126,7 @@ const DropzoneComponent = ({ onDrop, images }) => {
         </button>
       )}
 
-      {showIssueExtracting && <IssueExtractingPopup closePopup={setShowIssueExtracting} resestComponent={setSelectedFile}/>}
+      {showIssueExtracting && <IssueExtractingPopup closePopup={setShowIssueExtracting} resestComponent={() => setSelectedFile([])}/>}
 
       {showWaitPopup && <ExtractDinPopup />}
 
@@ -144,4 +160,3 @@ If you choose to provide personal information (e.g. saving data, creating an acc
 };
 
 export default DropzoneComponent;
-
