@@ -11,7 +11,7 @@ export const retrieveMonograph = async (id, npnOrDin) => {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            "Authorization": "Bearer " + "API_KEY_HERE"
+            "Authorization": "Bearer " + "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"
         },
         body: JSON.stringify({
             "model": "sonar-pro",

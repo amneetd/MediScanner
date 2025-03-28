@@ -40,35 +40,77 @@ const MedicalInfo = () => {
   }
 
 
-  const getMedication = async (medID) => {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const getMedication = async (medID) => {
     try {
-      if(medID.slice(0, 3) === "DIN"){
-        const client = new DPDClient();
-        const med = await client.getAllInfo(medID.slice(3));
-        const medInformation = await retrieveMonograph(medID.slice(3), "DIN")
-        med["interactions"] = medInformation["Drug Interactions"];
-        med["sideEffects"] = [...medInformation["Common Side Effects"], ...medInformation["Serious Side Effects"]];
-        med["warnings"] = medInformation["Warnings & Precautions"];
-        med["sources"] = medInformation["sources"];
-        setMedicationData(med);
-        console.log(medInformation)
-        setLoading(false);
-      }
-      else if(medID.slice(0, 3) === "NPN"){
-        const client = new LNPHDClient();
-        const med = await client.getAllInfo(medID.slice(3));
-        const medInformation = await retrieveMonograph(medID.slice(3), "NPN")
-        console.log(medInformation)
-        med["interactions"] = medInformation["Drug Interactions"];
-        med["sideEffects"] = [...medInformation["Common Side Effects"], ...medInformation["Serious Side Effects"]];
-        med["warnings"] = medInformation["Warnings & Precautions"];
-        setMedicationData(med);
-        setLoading(false);
-      }
+        if (medID.code.slice(0, 3) === "DIN") {
+            const medInformation = await retrieveMonograph(medID.code.slice(3), "DIN");
+            
+            console.log("Medication Information: ", medInformation);
+            
+            const med = {
+                brand_name: medInformation["Drug Name"] || "Unknown",
+                company_name: null, // No equivalent field in medInformation
+                drug_code: medID.code.slice(3),
+                productInfo: [],
+                activeIngredients: medInformation["Active Ingredient(s) & Strength"] || [],
+                interactions: medInformation["Drug Interactions"] || [],
+                sideEffects: [...(medInformation["Common Side Effects"] || []), ...(medInformation["Serious Side Effects"] || [])],
+                warnings: medInformation["Warnings & Precautions"] || [],
+                sources: medInformation["sources"] || []
+            };
+            
+            setMedicationData(med);
+            setLoading(false);
+            console.log("DIN we ouuuuuuttttt");
+        } else if (medID.code.slice(0, 3) === "NPN") {
+            const client = new LNPHDClient();
+            const med = await client.getAllInfo(medID.code.slice(3));
+            const medInformation = await retrieveMonograph(medID.code.slice(3), "NPN");
+            
+            console.log(medInformation);
+            
+            med["interactions"] = medInformation["Drug Interactions"];
+            med["sideEffects"] = [...medInformation["Common Side Effects"], ...medInformation["Serious Side Effects"]];
+            med["warnings"] = medInformation["Warnings & Precautions"];
+            
+            setMedicationData(med);
+            setLoading(false);
+        }
     } catch (err) {
-      console.error(err);
+        console.error(err);
     }
-  };
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
   useEffect(() => {
@@ -180,9 +222,9 @@ const MedicalInfo = () => {
       <div style={{ marginBottom: '20px' }}>
         <h2>Medication Name</h2>
         <div style={{flexDirection: 'row', display: 'flex'}}>
-        <p>{medicationData.productInfo[0].brand_name}</p>
+        <p>{medicationData.brand_name}</p>
         <button
-          onClick={() => speakText(`Medication Name: ${medicationData.productInfo[0].brand_name}`)}
+          onClick={() => speakText(`Medication Name: ${medicationData.brand_name}`)}
           style={{
             backgroundColor: '#6b83ff',
             color: 'white',
