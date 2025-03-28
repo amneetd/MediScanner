@@ -7,15 +7,14 @@ import ExtractDinPopup from './ExtractDinPopup';
 import IssueExtractingPopup from './IssueExtractingPopup';
 
 
-const DropzoneComponent = ({ onDrop }) => {
-  const [selectedFile, setSelectedFile] = useState([]);
+const DropzoneComponent = ({ onDrop, images }) => {
+  const [selectedFile, setSelectedFile] = useState(null);
   const navigate = useNavigate();
   const [showTermsModal, setShowTermsModal] = useState(false);
   const [isTermsAccepted, setIsTermsAccepted] = useState(false);
   const [showWaitPopup, setShowWaitPopup] = useState(false);
   const [showIssueExtracting, setShowIssueExtracting] = useState(false);
 
-  
   const handleDrop = useCallback((acceptedFiles) => {
     if (acceptedFiles.length > 0&& acceptedFiles[0].name) {
       setSelectedFile(acceptedFiles); // Set array of files
