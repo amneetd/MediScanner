@@ -17,7 +17,6 @@ const UserProfile = () => {
         setUser({
           name: currentUser.displayName ,
           email: currentUser.email,
-          phone: currentUser.phoneNumber ,
         });
       } else {
         setUser(null);  // user is logged out
@@ -48,7 +47,6 @@ const UserProfile = () => {
       <div style={styles.section}>
         <h1 style={styles.name}>{user.name}</h1>
         <p style={styles.info}>Email: {user.email}</p>
-        <p style={styles.info}>Phone: {user.phone}</p>
         <br />
         <div style={styles.buttons}>
           <button style={styles.buttonLogout} onClick={handleLogout}>Log Out</button>

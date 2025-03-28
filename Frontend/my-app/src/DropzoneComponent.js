@@ -8,30 +8,22 @@ import IssueExtractingPopup from './IssueExtractingPopup';
 
 
 const DropzoneComponent = ({ onDrop }) => {
-  const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedFile, setSelectedFile] = useState([]);
   const navigate = useNavigate();
   const [showTermsModal, setShowTermsModal] = useState(false);
   const [isTermsAccepted, setIsTermsAccepted] = useState(false);
   const [showWaitPopup, setShowWaitPopup] = useState(false);
   const [showIssueExtracting, setShowIssueExtracting] = useState(false);
 
-
+  
   const handleDrop = useCallback((acceptedFiles) => {
-    const file = acceptedFiles[0]; //Restricts to one file
-    if (file) {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onloadend = function() {
-          const data = reader.result;
-          setSelectedFile(data);
-      }
-      //setSelectedFile(file);
-      onDrop(file);
+    if (acceptedFiles.length > 0&& acceptedFiles[0].name) {
+      setSelectedFile(acceptedFiles); // Set array of files
     }
-  }, [onDrop]);
+  }, []);
 
   const handleUpload = () => {
-    if (selectedFile) {
+    if (selectedFile.length>0) {
       //console.log('Uploading file:', selectedFile);
       setShowTermsModal(true);
       //navigate('/medicalinfo');
@@ -40,28 +32,41 @@ const DropzoneComponent = ({ onDrop }) => {
 
   const handleAcceptTerms = async () => {
     setIsTermsAccepted(true);
-    setShowTermsModal(false); 
-    setShowWaitPopup(true)
-    console.log('Uploading file:', selectedFile); //copied from handleUpload
-    try{
-      const medicationIdentifier = await axios
-      .post("http://127.0.0.1:5001/mediscanner-1ffd7/us-central1/on_request_example", {
-        "selectedFile" : selectedFile
-      })
-      console.log(medicationIdentifier)
-      setShowWaitPopup(false)
-      if(medicationIdentifier.data.slice(0,3) === "DIN" || medicationIdentifier.data.slice(0,3) === "NPN"){
-        navigate('/medicalinfo', { state: medicationIdentifier.data });
-      }
-      else{
-        console.log("can't identify DIN")
+    setShowTermsModal(false);
+    setShowWaitPopup(true);
+  
+    try {
+      const formData = new FormData();
+      selectedFile.forEach((file, index) => {
+        formData.append('file', file);
+      });
+
+      console.log([...formData.entries()]);
+
+  
+      const response = await axios.post(
+        "https://ocr-api-768763807243.us-central1.run.app/ocr/",
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+  
+      console.log("Backend Response:", response);
+      setShowWaitPopup(false);
+      const result = response.data.code 
+      if (result.startsWith("DIN") || result.startsWith("NPN")) {
+        navigate('/medicalinfo', { state: response.data });
+      } else {
         setShowIssueExtracting(true);
       }
+    } catch (error) {
+      console.error("Upload failed:", error);
+      setShowWaitPopup(false);
+      setShowIssueExtracting(true);
     }
-    catch{
-      setShowWaitPopup(false)
-    }
-    //navigate('/medicalinfo'); 
   };
 
   const handleRejectTerms = () => {
@@ -70,11 +75,12 @@ const DropzoneComponent = ({ onDrop }) => {
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ 
     onDrop: handleDrop,
-    maxFiles: 1,
-    disabled: !!selectedFile 
+    maxFiles: 10,
+    disabled: selectedFile.length > 0,
+    multiple: true
   });
 
-  const dropzoneClassName = `dropzone-${selectedFile ? 'active' : ''}`;
+  const dropzoneClassName = `dropzone-${selectedFile.length>0 ? 'active' : ''}`;
 
   return (
     <div 
@@ -85,21 +91,21 @@ const DropzoneComponent = ({ onDrop }) => {
       }}
     >
       <input {...getInputProps()} />
-      {!selectedFile && (
+      {selectedFile.length === 0 && (
         isDragActive ? 
         <p>Drop the file here...</p> :
         <p>Drag and drop your image here, or click to select files</p>
       )}
 
-      {selectedFile && (
+      {selectedFile.length>0 && (
         <div className="file-info">
           <p>Selected File: 
             <br/>
-            {selectedFile.name}</p>
+            {selectedFile.length > 0 && selectedFile[0].name}</p>
         </div>
       )}
 
-      {selectedFile && (
+      {selectedFile.length>0 && (
         <button className="upload-button" onClick={handleUpload}>
           Upload this file
         </button>
@@ -139,3 +145,4 @@ If you choose to provide personal information (e.g. saving data, creating an acc
 };
 
 export default DropzoneComponent;
+

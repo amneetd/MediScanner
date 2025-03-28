@@ -10,6 +10,8 @@ import { deleteMedication, retrieveUserInformation } from "./Firebase-Configurat
 import { auth } from './Firebase-Configurations/firebaseConfig';
 import DPDClient from './backend/DPD_Axios.js';
 import LNPHDClient from './backend/NPN_Axios.js'
+import MedicationSources from './MedicationSources.js';
+import { retrieveMonograph } from './Monograph.js';
 
 const SavedMedications = () => {
   const [savedMedications, setSavedMedications] = useState([]);
@@ -44,8 +46,13 @@ const SavedMedications = () => {
         userInfo.savedMedications[i]["id"] = i;
         userInfo.savedMedications[i]["name"] = med.productInfo[0].brand_name;
         userInfo.savedMedications[i]["dosage"] = `${ (med.activeIngredients[0].dosage_unit === "") ? `${med.activeIngredients[0].strength} ${med.activeIngredients[0].strength_unit}` : `${med.activeIngredients[0].dosage_unit} ${med.activeIngredients[0].dosage_value}`}`;
-        userInfo.savedMedications[i]["interactions"] = ["Aspirin", "Blood Thinners", "Alcohol"];
-        userInfo.savedMedications[i]["sideEffects"] = ["Nausea", "Dizziness", "Stomach pain", "Rash"];
+
+        const medInformation = await retrieveMonograph(userInfo.savedMedications[i].dIN.slice(3), userInfo.savedMedications[i].dIN.slice(0, 3))
+        console.log(medInformation)
+        userInfo.savedMedications[i]["interactions"] = medInformation["Drug Interactions"];
+        userInfo.savedMedications[i]["sideEffects"] = [...medInformation["Common Side Effects"], ...medInformation["Serious Side Effects"]];
+        userInfo.savedMedications[i]["warnings"] = medInformation["Warnings & Precautions"];
+        userInfo.savedMedications[i]["sources"] = medInformation["sources"];
       }
       setSavedMedications(userInfo.savedMedications)
       setLoading(false);
@@ -83,7 +90,7 @@ const SavedMedications = () => {
   };
 
   if (loading) {
-    return <p>Loading your saved medications...</p>;
+    return <p>Loading your saved medications, this can take a minute...</p>;
   }
 
   if (savedMedications.length === 0) {
@@ -119,6 +126,13 @@ const SavedMedications = () => {
                 <li key={index}>{effect|| "Unknown"}</li>
               ))}
             </ul>
+            <p><strong>Warnings:</strong></p>
+            <ul>
+              {medication.warnings.map((warning, index) => (
+                <li key={index}>{warning|| "Unknown"}</li>
+              ))}
+            </ul>
+            <MedicationSources sources={medication.sources}/>
             <button
               onClick={() => handleDelete(medication)}
               style={{
