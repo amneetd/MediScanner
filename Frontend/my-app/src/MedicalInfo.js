@@ -80,6 +80,7 @@ const MedicalInfo = () => {
         const medInformation = {
           "Drug Name": "GRAVOL TABLETS",
           "Active Ingredient(s) & Strength": "Dimenhydrinate 50 MG",
+          "Brief Summary": "Gravol is an over-the-counter antihistamine medication used to prevent and treat nausea, vomiting, and dizziness associated with motion sickness. It may cause drowsiness and impair mental alertness.",
           "Indications": [
               "Prevention and treatment of nausea and vomiting",
               "Motion sickness"
@@ -130,6 +131,7 @@ const MedicalInfo = () => {
         med["sideEffects"] = [...medInformation["Common Side Effects"], ...medInformation["Serious Side Effects"]];
         med["warnings"] = medInformation["Warnings & Precautions"];
         med["sources"] = medInformation["sources"];
+        med["summary"] = medInformation["Brief Summary"];
         setMedicationData(med);
         console.log(medInformation)
         setLoading(false);
@@ -706,6 +708,20 @@ const MedicalInfo = () => {
         </div>
         <p style={{ ...styles.contentText, fontSize: '18px', fontWeight: '500' }}>
           {medicationData.productInfo[0].brand_name}
+        </p>
+      </div>
+
+      {/* Medication Summary */}
+      <div style={styles.card}>
+        <div style={styles.sectionHeader}>
+          <h2 style={styles.sectionTitle}>Medication Summary</h2>
+          <HiOutlineSpeakerWave
+            onClick={() => speakText(`Medication Summary: ${medicationData.summary}`)}
+            style={styles.audioIcon}
+          />
+        </div>
+        <p style={{ ...styles.contentText, fontSize: '18px', fontWeight: '500' }}>
+          {medicationData.summary}
         </p>
       </div>
 

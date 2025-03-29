@@ -21,7 +21,9 @@ export const retrieveMonograph = async (id, npnOrDin) => {
                     content: `Using the ${npnDinConversion[npnOrDin]} (${npnOrDin}) ${id}, find the medication’s information from Canadian sources (e.g. Health Canada’s Drug Product Database or the drug’s official product monograph). Then provide a high-quality, concise summary with the following sections:
         
         Drug Name – official name of the product.
-        
+
+        Brief summary of the important things to be aware of the medication.
+
         Active Ingredient(s) & Strength –
         
         Indications (What it is used for) – what conditions or symptoms this drug treats.
