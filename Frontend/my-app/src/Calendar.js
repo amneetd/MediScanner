@@ -168,8 +168,8 @@ const Calendar = () => {
 
 
   return (
-    <div className="calendar-container" >
-      <div className="calendar" style={{marginTop: '20px'}}>
+    <div className="calendar-container">
+      <div className="calendar">
         <div className="header">
           <button onClick={() => changeMonth(-1)}>{"<"}</button>
           <div>
@@ -189,7 +189,7 @@ const Calendar = () => {
       </div>
       <br/>
       {selectedDay && (
-        <div className="info-box" style={{marginTop: '20px'}}>
+        <div className="info-box">
           <h2>{`${currentDate.toLocaleString("default", { month: "long" })} ${
               selectedDay
             }, ${currentDate.getFullYear()}`} Medication Information</h2>

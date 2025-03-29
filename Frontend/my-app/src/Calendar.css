@@ -57,7 +57,7 @@
     height: 40px;
   }
   .calendar-day.selected {
-    background-color: #848f6b;
+    background-color: #f7a1e9;
     color: white;
   }
   

@@ -116,7 +116,7 @@ const DropzoneComponent = ({ images = [] }) => {
       setShowWaitPopup(false);
       const result = response.data.code;
       if (result.startsWith("DIN") || result.startsWith("NPN")) {
-        navigate('/medicalinfo', { state: result });
+        navigate('/medicalinfo', { state: response.data });
       } else {
         setShowIssueExtracting(true);
       }
