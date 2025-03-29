@@ -42,7 +42,7 @@ const LoginPage = () => {
   return (
     <div className="mid-container">
       <header>
-        <h1>MediScanner Login</h1>
+        <h1> Login</h1>
       </header>
       <div className="login-box">
         <div className="login-back">
@@ -65,7 +65,7 @@ const LoginPage = () => {
         </div>
         </div>
       <footer>
-        <p>2024 MediScanner University of Calgary ENSF Capstone</p>
+        <p>2024-2025 MediScanner University of Calgary ENSF Capstone</p>
       </footer>
     </div>
   );

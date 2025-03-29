@@ -9,7 +9,7 @@ const ConfirmMedicationInfo = ({ startOn, endOn, frequency, handleConfirmation})
 
   return (
     <div className='extract-wait-popup'>
-        <div className='extract-wait-container'>
+        <div className='extract-wait-container' style={{borderRadius: '10px'}}>
             <p>Please confirm this is the correct information:</p>
             <p>Start Date: {startOn}</p>
             <p>End Date: {endOn} </p>
