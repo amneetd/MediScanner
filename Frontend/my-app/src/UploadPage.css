@@ -1,0 +1,226 @@
+.container {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  min-height: 100vh;
+  background-color: #f8f9fa;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.title {
+  color: #323824;
+  font-size: 2.5rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.splitContainer {
+  display: flex;
+  flex-direction: row;
+  gap: 30px;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  flex: 1;
+  border: 1px solid #e9ecef;
+}
+
+.cardTitle {
+  color: #323824;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #f1f3f5;
+}
+
+.stepNumber {
+  background-color: #323824;
+  color: white;
+  border-radius: 50%;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-bottom: 7px;
+  padding-top: 7px;  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 15px;
+  font-weight: bold;
+}
+
+.stepText {
+  color: #333333;
+  font-size: 1rem;
+}
+
+.uploadButton {
+  background-color: #323824;
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+  transition: background-color 0.2s;
+}
+
+.uploadButton:hover {
+  background-color: #2f371f;
+}
+
+.footer {
+  text-align: center;
+  margin-top: 40px;
+  font-size: 0.9rem;
+}
+
+/* Media Queries for Mobile */
+@media (max-width: 768px) {
+  .splitContainer {
+    flex-direction: column;
+    gap: 20px; /* Adjust spacing for mobile */
+  }
+
+  .card {
+    padding: 20px; /* Adjust padding for mobile */
+  }
+
+  .title {
+    font-size: 2rem; /* Slightly smaller title on mobile */
+  }
+
+  .step {
+    font-size: 0.9rem; /* Adjust step text size for mobile */
+  }
+
+  .uploadButton {
+    width: 100%; /* Make button take up full width on mobile */
+  }
+}
+
+
+/*
+ const styles = {
+    container: {
+      fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+      minHeight: '100vh',
+      backgroundColor: colors.background,
+      padding: '20px',
+      maxWidth: '1200px',
+      margin: '0 auto',
+    },
+    header: {
+      textAlign: 'center',
+      marginBottom: '40px',
+    },
+    title: {
+      color: colors.primary,
+      fontSize: '2.5rem',
+      fontWeight: '600',
+      marginBottom: '10px',
+    },
+    splitContainer: {
+      display: 'flex',
+      flexDirection: 'row',
+      gap: '30px',
+      justifyContent: 'center',
+      alignItems: 'flex-start',
+      // Add media query to make the layout column on smaller screens
+      '@media (max-width: 768px)': {
+        flexDirection: 'column',
+        gap: '20px', // Optional: Adjust spacing for mobile
+      },
+    },
+    card: {
+      backgroundColor: colors.cardBackground,
+      borderRadius: '12px',
+      padding: '30px',
+      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)',
+      flex: 1,
+      border: `1px solid ${colors.border}`,
+    },
+    cardTitle: {
+      color: colors.primary,
+      fontSize: '1.5rem',
+      fontWeight: '600',
+      marginBottom: '20px',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '10px',
+    },
+    step: {
+      display: 'flex',
+      alignItems: 'center',
+      marginBottom: '15px',
+      padding: '15px',
+      borderRadius: '8px',
+      backgroundColor: colors.hover,
+    },
+    stepNumber: {
+      backgroundColor: colors.primary,
+      color: 'white',
+      borderRadius: '50%',
+      width: '30px',
+      height: '30px',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginRight: '15px',
+      fontWeight: 'bold',
+    },
+    stepText: {
+      color: colors.text,
+      fontSize: '1rem',
+    },
+    uploadButton: {
+      backgroundColor: colors.primary,
+      color: 'white',
+      padding: '12px 24px',
+      border: 'none',
+      borderRadius: '6px',
+      cursor: 'pointer',
+      fontSize: '1rem',
+      fontWeight: '600',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '10px',
+      marginTop: '20px',
+      transition: 'background-color 0.2s',
+      '&:hover': {
+        backgroundColor: '#3a5bbf',
+      },
+    },
+    footer: {
+      textAlign: 'center',
+      marginTop: '40px',
+      fontSize: '0.9rem',
+    },
+  };
+  */

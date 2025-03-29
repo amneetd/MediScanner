@@ -658,7 +658,7 @@ const MedicalInfo = () => {
       },
     },
     audioIcon: {
-      color: colors.primary,
+      color: colors.secondary,
       cursor: 'pointer',
       fontWeight: '900',
       fontSize: '20px',

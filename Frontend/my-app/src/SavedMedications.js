@@ -326,7 +326,7 @@ const styles = {
     color: colors.text,
   },
   audioIcon: {
-    color: colors.primary,
+    color: colors.secondary,
     cursor: 'pointer',
     fontSize: '20px',
     transition: 'transform 0.2s',

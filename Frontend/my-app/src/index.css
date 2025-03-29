@@ -78,27 +78,25 @@ footer {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 350px;
-  height: 350px;
+  
   border: 2px dashed #999;
   background-color: #f9f9f9;
   color: #666;
   cursor: pointer;
-  margin-left: 130px;
   margin-top: 50px;
+  padding: 20px;
 }
 
 .dropzone-active {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 350px;
-  height: 350px;
+
   border: 2px dashed #999;
   background-color: #99311c;
   color: #666;
-  margin-left: 130px;
   margin-top: 50px;
+  padding: 20px;
 }
 
 
@@ -111,14 +109,17 @@ footer {
 
 .file-info {
   margin-top: 10px;
+  margin-bottom: 10px;
   font-size: 1rem;
   color: #333;
+  font-weight: 400;
 }
 
 .upload-button {
   margin-top: 15px;
+  margin-bottom: 10px;
   padding: 10px 20px;
-  background-color: #99311c;
+  background-color: #393433;
   color: white;
   border: none;
   border-radius: 5px;
@@ -126,7 +127,21 @@ footer {
 }
 
 .upload-button:hover {
-  background-color: #b02f15;
+  background-color: #364336;
+}
+
+.save-button {
+
+  padding: 10px 20px;
+  background-color: #ffffff;
+  color: rgb(0, 0, 0);
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.save-button:hover {
+  background-color: #f3edec;
 }
 
 .login-box {
@@ -271,4 +286,8 @@ footer {
   margin: 0 10px;
   padding: 10px 20px;
   font-size: 16px;
+  border-radius: 5px;
+  border-width: 1px;
+  border-color:rgb(84, 83, 83);
+  background-color: #e7e7e7;
 }
