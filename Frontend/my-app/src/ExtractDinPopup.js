@@ -9,7 +9,7 @@ const ExtractDinPopup = () => {
 
   return (
     <div className='extract-wait-popup'>
-        <div className='extract-wait-container'>
+        <div className='extract-wait-container' style={{borderRadius: '10px'}}>
             <p>Please wait while your medication is identified. This can take a minute.</p>
         </div>
     </div>

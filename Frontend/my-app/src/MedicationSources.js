@@ -25,7 +25,7 @@ const MedicationSources = ({ sources }) => {
             </ul>        
             <button onClick={setHideSources}
         style={{
-          backgroundColor: '#6b83ff',
+          backgroundColor: '#99311c', 
           color: 'white',
           padding: '10px 20px',
           border: 'none',

@@ -39,7 +39,7 @@ const Register = () => {
   return (
     <div className="mid-container">
       <header>
-        <h1>MediScanner Register</h1>
+        <h1> Register</h1>
       </header>
       <div className="login-box">
         <div className="login-back2">
@@ -87,7 +87,7 @@ const Register = () => {
         </div>
       </div>
       <footer>
-        <p>2024 MediScanner University of Calgary ENSF Capstone</p>
+        <p>2024-2025 MediScanner University of Calgary ENSF Capstone</p>
       </footer>
     </div>
   );

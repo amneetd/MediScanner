@@ -30,7 +30,7 @@ header:after {
   display: block;
   width: 100%;
   height: 4px;
-  background-color: #6b83ff;
+  background-color: #99311c;
   position: absolute;
   bottom: 0;
   left: 0;
@@ -95,7 +95,7 @@ footer {
   width: 350px;
   height: 350px;
   border: 2px dashed #999;
-  background-color: #6b83ff;
+  background-color: #99311c;
   color: #666;
   margin-left: 130px;
   margin-top: 50px;
@@ -118,7 +118,7 @@ footer {
 .upload-button {
   margin-top: 15px;
   padding: 10px 20px;
-  background-color: #6b83ff;
+  background-color: #99311c;
   color: white;
   border: none;
   border-radius: 5px;
@@ -126,7 +126,7 @@ footer {
 }
 
 .upload-button:hover {
-  background-color: #4f6cfb;
+  background-color: #b02f15;
 }
 
 .login-box {
@@ -192,7 +192,7 @@ footer {
 }
 
 .create-account-link:hover {
-  color: #4f6cfb;              
+  color: #b02f15;              
   text-decoration: none;        
 }
 
@@ -200,10 +200,10 @@ footer {
   padding: 15px 10px;
   width: 334px;
   border-radius: 15px;
-  border: 1px solid #6b83ff;
+  border: 1px solid #99311c;
   font-size: 1.0rem; 
   color: white;
-  background-color: #6b83ff;
+  background-color: #99311c;
   transform: translateY(-10px);  
 
 }
@@ -213,14 +213,14 @@ footer {
   padding: 15px 20px;
   width: 334px;
   border-radius: 15px;
-  border: 1px solid #6b83ff;
+  border: 1px solid #99311c;
   font-size: 1.0rem; 
   color: white;
-  background-color: #6b83ff;
+  background-color: #99311c;
 }
 
 .login-box button:hover {
-  background-color: #4f6cfb;
+  background-color: #b02f15;
   border: 1px solid #ccc;
   cursor: pointer;
 }
