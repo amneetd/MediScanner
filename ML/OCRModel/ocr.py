@@ -15,9 +15,9 @@ potential_confidence=[]
 
 DIN_PATTERN =[ 
     r"DIN\d{8}\b",
+    r"DIN:\d{8}\b",
     r".*?IN\d{8}\b",
     r"D.*?N\d{8}\b"]
-
 NPN_PATTERN = [
     r"NPN\d{8}\b" , 
     r"PN\d{8}\b" , 
@@ -51,7 +51,7 @@ def extract_text(image):
 def classify_text(options):
     for op in options:
         text_nospace = op[0].replace(" ", "")
-        sliced_text = text_nospace[:11]
+        sliced_text = text_nospace[:12]
 
         for pattern in DIN_PATTERN:
             din_match = re.search(pattern, sliced_text)
@@ -94,8 +94,10 @@ def process_image(imagebytes):
         extracted_text = extract_text(preprocessed_images)
         classify_text(extracted_text)
 
-    confident_answer= confident_answer()
-    return confident_answer
+    confidentanswer= confident_answer()
+    potential_confidence.clear()
+    potential.clear()
+    return confidentanswer
             
 
 
